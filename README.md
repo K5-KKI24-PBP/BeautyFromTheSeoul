@@ -15,7 +15,7 @@ By providing detailed product listings, user reviews, store locations, and promo
 
 ## Modules to be Implemented
 ### 1. Landing Page  
-Contains a display of the current featured products and a carousell of ads from specific brands, where if you click on it, it would direct you to the catalogue of the brand. To view the product catalogue, you can choose a specific brand or product type on the navigation bar. A "view all" option is also available.
+Contains a display of the current featured products and a carousell of ads from specific brands. If you click on said ads, it would direct you to the catalogue of the brand. To view the product catalogue, you can choose a specific brand or product type on the navigation bar. A "view all" option is also available.
 
 ### 2. Product Catalogue  
 Contains cards of the skincare products, each card contains the product's name, brand, price, description, type, and reviews. You are able to filter the catalogue by brand or product type. Other than viewing, a user can add a product to their "favorites" list and review a product by leaving a rating and/or comment.
