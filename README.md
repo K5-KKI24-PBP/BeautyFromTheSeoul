@@ -33,5 +33,5 @@ Contains cards of promotion events occuring/about to occur in Seoul. Each card c
 This application is going to utilize the dataset [Skin Care](https://www.kaggle.com/datasets/taniadh/skin-care?resource=download) which is available on Kaggle. The dataset contains a list of Korean Skincare products along with their name, brand, price, description, and type.
 
 ## Roles
-1. User: View, rate, and leave a comment on products, add product to favorites
-2. Admin: Add and delete products, monitor comments, and everything else a User can do 
+1. User: View, rate, and leave a comment on products, add product to favorites, RSVP to events.
+2. Admin: Add and delete products, monitor reviews, create events, and everything else a User can do.
