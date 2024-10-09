@@ -14,23 +14,28 @@ The proposed application, Beauty from the Seoul, serves as a comprehensive guide
 By providing detailed product listings, user reviews, store locations, and promotion events, our application will empower users to make informed purchasing decisions——or to get your money's worth, as they say——while exploring Seoul's vibrant beauty scene.
 
 ## Modules to be Implemented
-### 1. Landing Page  
+### 📜 Landing Page
+**Done by Athazahra Nabila Ruby**  
 Contains a display of the current featured products and a carousell of ads from specific brands. If you click on said ads, it would direct you to the catalogue of the brand. To view the product catalogue, you can choose a specific brand or product type on the navigation bar. A "view all" option is also available.
 
-### 2. Product Catalogue  
-Contains cards of the skincare products, each card contains the product's name, brand, price, description, type, and reviews. You are able to filter the catalogue by brand or product type. Other than viewing, a user can add a product to their "favorites" list and review a product by leaving a rating and/or comment.
+### 🧼 Product Catalogue  
+**Done by Muhammad Ghaza Fadhlibaqi, Anindiyo Banu Prabasworo, & Muhammad Jordan Ar-Razi Aziz**  
+Contains cards of the skincare products, each card contains the product's name, brand, price, description, type, and reviews. You are able to filter the catalogue by brand or product type. Other than viewing, users can add a product to their "favorites" list and review a product by leaving a rating and/or comment.
 
-### 3. User Favorites  
+### 💌 User Favorites  
+**Done by Min Kim**  
 Each user has their own "favorites" list. They can "love" a product to add it to the list and also delete a product from their list. 
 
-### 4. Skincare Store Locator
+### 🗺️ Skincare Store Locator
+**Done by Athazahra Nabila Ruby & Min Kim**  
 An interactive map that shows users where they can buy skincare products in Seoul, with integration to Google Maps.
 
-### 5. Promotion Events
+### 📆 Promotion Events
+**Done by Kayla Soraya Djakaria**  
 Contains cards of promotion events occuring/about to occur in Seoul. Each card contains info about the store location, promotion type, and period of promotion. A user can RSVP to an event, the card will then list all the users that has RSPV'd.
 
 ## Source for Intial Dataset
-This application is going to utilize the dataset [Skin Care](https://www.kaggle.com/datasets/taniadh/skin-care?resource=download) which is available on Kaggle. The dataset contains a list of Korean Skincare products along with their name, brand, price, description, and type.
+This application is going to utilize the dataset [Skin Care](https://www.kaggle.com/datasets/taniadh/skin-care?resource=download) which is available on Kaggle. The dataset contains a list of Korean skincare products along with their name, brand, price, description, and type.
 
 ## Roles
 1. User: View, rate, and leave a comment on products, add product to favorites, RSVP to events.
