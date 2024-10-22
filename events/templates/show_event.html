@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% include 'navbar.html' %}
+<div>
+    <h1>Promotion Events</h1>
+</div>
+{% if not events %}
+<p>There are no promotion events.</p>
+{% else %}
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Start date</th>
+    <th>End date</th>
+    <th>Description</th>
+    <th>Location</th>
+    <th>Promotion type</th>
+  </tr>
+
+  {% for event in events %}
+  <tr>
+    <td>{{event.name}}</td>
+    <td>{{event.start_date}}</td>
+    <td>{{event.end_date}}</td>
+    <td>{{event.description}}</td>
+    <td>{{event.location}}</td>
+    <td>{{event.promotion_type}}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+<br />
+
+<a href="{% url 'events:create_event' %}">
+  <button>Add Event</button>
+</a>
+{% endblock content%}
