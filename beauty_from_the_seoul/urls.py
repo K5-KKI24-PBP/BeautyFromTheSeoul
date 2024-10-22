@@ -26,6 +26,7 @@ urlpatterns = [
     path('events/', include('events.urls')),
     path('store-locator/', include('locator.urls')),
     path('catalogue/', include('catalogue.urls')),
+    path('favorites/', include('favorites.urls')),
 ]
 
 if settings.DEBUG:
