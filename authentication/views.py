@@ -1,3 +1,50 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from authentication.forms import RegistrationForm
+from django.contrib.auth.forms import AuthenticationForm
 
-# Create your views here.
+def login(request):
+    if request.method == "POST":
+        form= AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            username = request.POST.get("username")
+            password = request.POST.get("password")
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                next_page = request.GET.get("next")
+                response = redirect(next_page) if next_page else redirect("main:show_main")
+                response.set_cookie("user_logged_in", user.username)  # Store username instead of user object
+                return response
+            else:
+                messages.info(request, "Incorrect username or password. Please try again.")
+        else:
+            messages.info(request, "Incorrect username or password. Please try again.")
+    else:
+        form = AuthenticationForm()
+    context = {'form': form}
+    if request.user.is_authenticated:
+        return redirect('main:show_main')
+    else:
+        return render(request, 'login.html', context)
+
+def logout(request):
+    logout(request)
+    response = redirect("main:show_main")
+    response.delete_cookie('user_logged_in')
+    return response
+
+def register(request):
+    form = RegistrationForm()
+    if request.method == "POST":
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Account created successfully!")
+            return redirect("authentication:login")
+    context = {"form": form}
+    if request.user.is_authenticated:
+        return redirect("main:show_main")
+    else:
+        return render(request, "register.html", context)
