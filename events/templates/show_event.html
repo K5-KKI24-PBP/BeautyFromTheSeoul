@@ -26,6 +26,16 @@
     <td>{{event.description}}</td>
     <td>{{event.location}}</td>
     <td>{{event.promotion_type}}</td>
+    <td>
+        <a href="{% url 'events:edit_event' event.id %}">
+            <button>Edit Event</button>
+        </a>
+    </td>
+    <td>
+        <a href="{% url 'events:delete_event' event.id %}">
+            <button>Delete Event</button>
+        </a>
+    </td>
   </tr>
   {% endfor %}
 </table>
