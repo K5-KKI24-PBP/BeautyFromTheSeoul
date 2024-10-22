@@ -1,0 +1,21 @@
+{% extends 'base.html' %} 
+{% block content %}
+<h1>Submit your own ads!</h1>
+
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-3">
+        {{ form.brand_name.label_tag }}
+        {{ form.brand_name }}
+    </div>
+    <div class="input-group mb-3">
+        {{ form.image.label_tag }}
+        {{ form.image }}
+        <label class="input-group-text" for="inputGroupFile02">Upload Image</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+{% endblock %}
