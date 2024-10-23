@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from authentication.forms import RegistrationForm
 from django.contrib.auth.forms import AuthenticationForm
 
-def login(request):
+def login_user(request):
     if request.method == "POST":
         form= AuthenticationForm(request, request.POST)
         if form.is_valid():
@@ -29,13 +29,13 @@ def login(request):
     else:
         return render(request, 'login.html', context)
 
-def logout(request):
+def logout_user(request):
     logout(request)
     response = redirect("main:show_main")
     response.delete_cookie('user_logged_in')
     return response
 
-def register(request):
+def register_user(request):
     form = RegistrationForm()
     if request.method == "POST":
         form = RegistrationForm(request.POST)

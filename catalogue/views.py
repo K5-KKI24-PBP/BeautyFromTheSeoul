@@ -10,8 +10,8 @@ def show_products(request):
     form = ProductFilterForm(request.GET)
     
     if form.is_valid():
-        product_name = form.cleaned_data.get['name']
-        brand = form.cleaned_data.get['brand']  
+        product_name = form.cleaned_data.get('name')
+        brand = form.cleaned_data.get('brand')  
         
         if product_name:
             products = products.filter(name__icontains=product_name)
@@ -19,8 +19,10 @@ def show_products(request):
             products = products.filter(brand__icontains=brand)
 
     context = {
-        'products': products}
-    return redirect(request, "catalogue.html", context)
+        'products': products,
+        'form': form
+    }
+    return render(request, "catalogue.html", context)
 
 # Add Product
 def add_product(request):
