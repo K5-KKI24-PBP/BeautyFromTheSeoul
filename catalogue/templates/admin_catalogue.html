@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Products | Beauty From The Seoul</title>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<h1>Product Catalogue</h1>
+{% if not products %}
+<p>There are no products available now.</p>
+{% else %}
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Brand</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Price</th>
+    </tr>
+
+    {% for product in products %}
+    <tr>
+        <td>{{ product.name }}</td>
+        <td>{{ product.brand }}</td>
+        <td>{{ product.product_type }}</td>
+        <td>{{ product.description }}</td>
+        <td>{{ product.price }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% endblock content %}
