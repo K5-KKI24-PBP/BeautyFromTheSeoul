@@ -27,14 +27,18 @@
     <td>{{event.location}}</td>
     <td>{{event.promotion_type}}</td>
     <td>
+      {% if user.is_superuser %}
         <a href="{% url 'events:edit_event' event.id %}">
             <button>Edit Event</button>
         </a>
+      {% endif %}
     </td>
     <td>
+      {% if user.is_superuser %}
         <a href="{% url 'events:delete_event' event.id %}">
             <button>Delete Event</button>
         </a>
+      {% endif %}
     </td>
   </tr>
   {% endfor %}
@@ -43,7 +47,9 @@
 
 <br />
 
+{% if user.is_superuser %}
 <a href="{% url 'events:create_event' %}">
   <button>Add Event</button>
 </a>
+{% endif %}
 {% endblock content%}
