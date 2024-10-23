@@ -8,6 +8,13 @@
 {% block content %}
 {% include 'navbar.html' %}
 <h1>Product Catalogue</h1>
+
+{% if user.is_superuser %}
+<div>
+    <a href="{% url 'catalogue:add_product' %}" class="btn btn-primary">Add Product</a>
+</div>
+{% endif %}
+
 {% if not products %}
 <p>There are no products available now.</p>
 {% else %}
