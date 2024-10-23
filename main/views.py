@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from main.forms import AdForm
 from main.models import AdEntry
 
-# Create your views here.
 def show_main(request):
     ads = AdEntry.objects.all()
     context = {
