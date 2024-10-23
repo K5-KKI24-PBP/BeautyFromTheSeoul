@@ -3,30 +3,38 @@
 {% block content %}
 {% include 'navbar.html' %}
 <div class="container">
-  <div class="row">
+  <!-- <div class="row">
     <div class="col-md-12">
         <h1 class="display-4">Beauty From The Seoul</h1>
         <p class="lead">(*/￣︶￣)/ Welcome to Beauty From The Seoul! We hope you enjoy your stay! \(￣︶￣*\)</p>
     </div>
-  </div>
+  </div> -->
 
-  <div id="carouselExampleIndicators" class="carousel slide">
+  <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-indicators">
       <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+      {% for ad in ads %}
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter }}" aria-label="Slide {{ forloop.counter|add:1 }}"></button>
+      {% endfor %}
     </div>
+    
     <div class="carousel-inner">
       <div class="carousel-item active">
-        <img src="{% static 'images/klairs_ad.png' %}"  class="d-block w-100" alt="...">
+        <img src="{% static 'images/klairs_ad.png' %}" class="d-block w-100" alt="Default Ad" style="width: 700px; height: 500px; object-fit: cover;">
+        <div class="carousel-caption d-none d-md-block">
+        </div>
       </div>
+
+      {% for ad in ads %}
       <div class="carousel-item">
-        <img src="{% static 'images/krave_ad.jpg' %}" class="d-block w-100" alt="...">
+        <img src="{{ ad.image.url }}" class="d-block w-100" alt="{{ ad.brand_name }}" style="width: 700px; height: 500px; object-fit: cover;">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>{{ ad.brand_name }}</h5>
+        </div>
       </div>
-      <div class="carousel-item">
-        <img src="{% static 'images/drjart_ad.jpg' %}" class="d-block w-100" alt="...">
-      </div>
+      {% endfor %}
     </div>
+
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Previous</span>
@@ -37,8 +45,8 @@
     </button>
   </div>
 
-<a href="{% url 'main:create_ad' %}">
-  <button type="button" class="btn btn-primary mt-3">Submit your own ads!</button>
-</a>
+  <a href="{% url 'main:create_ad' %}">
+    <button type="button" class="btn btn-primary mt-3">Submit your own ads!</button>
+  </a>
 
 {% endblock content %}
