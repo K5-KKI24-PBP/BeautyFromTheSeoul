@@ -24,10 +24,8 @@ def login_user(request):
     else:
         form = AuthenticationForm()
     context = {'form': form}
-    if request.user.is_authenticated:
-        return redirect('main:show_main')
-    else:
-        return render(request, 'login.html', context)
+
+    return render(request, 'login.html', context)
 
 def logout_user(request):
     logout(request)
