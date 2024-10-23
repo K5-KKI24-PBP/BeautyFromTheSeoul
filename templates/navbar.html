@@ -33,7 +33,7 @@
           {% if user.is_authenticated %}
             <div class="dropdown">
               <button class="btn btn-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                {{ user.get_full_name|default:user.username }}
+                Hello, {{ user.get_full_name|default:user.username }}!
               </button>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li><a class="dropdown-item" href="{% url 'authentication:logout' %}">Logout</a></li>
