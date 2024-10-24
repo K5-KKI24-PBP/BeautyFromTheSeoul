@@ -1,18 +1,31 @@
 {% extends 'base.html' %} 
 {% block content %}
-<h1>Add Location Entry</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
 
-<form method="POST">
-  {% csrf_token %}
-  <table>
-    {{ form.as_table }}
-    <tr>
-      <td></td>
-      <td>
-        <input type="submit" value="Add Location Entry" />
-      </td>
-    </tr>
-  </table>
-</form>
+<div class="container-sm">
+  <h1>Add Location Entry</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="mb-3 col">
+      <label for="input_storename" class="form-label">Store Name:</label>
+      <input type="text" class="form-control" id="input_storename" name="store_name">
+    </div>
+    <div class="mb-3 col">
+      <label for="input_store_address" class="form-label">Store Address:</label>
+      <input type="text" class="form-control" id="input_store_address" name="store_address">
+    </div>
+    <div class="mb-3 col">
+      <label for="input_website" class="form-label">Website (optional):</label>
+      <input type="url" class="form-control" id="input_website" name="website">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form> 
+</div>
+
+
 
 {% endblock content %}

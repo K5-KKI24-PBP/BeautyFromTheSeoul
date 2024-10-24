@@ -11,10 +11,12 @@
             <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1eUKaCIKE-XTVcOgbm4WPCkHSnibBGQ4&ehbc=2E312F&noprof=1" width="640" height="480" frameborder="0" style="border:0" allowfullscreen></iframe>
         </div>
     </div>
+    <div>
+        <a href="{% url 'locator:location_entry' %}">
+            <button>Add New Location Entry</button>
+        </a>
+    </div>
 </div>
 
-<a href="{% url 'locator:location_entry' %}">
-    <button>Add New Location Entry</button>
-</a>
 
 {% endblock content %}
