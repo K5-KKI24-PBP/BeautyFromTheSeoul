@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from catalogue.forms import AddProductForm, ProductFilterForm
 from catalogue.models import Products
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse, JsonResponse
 from django.urls import reverse
 from functools import wraps
 from django.contrib.auth.decorators import login_required
@@ -24,14 +24,16 @@ def show_products(request):
     products = Products.objects.all()
     form = ProductFilterForm(request.GET)
     
-    if form.is_valid():
-        product_name = form.cleaned_data.get('name')
-        product_brand = form.cleaned_data.get('brand')  
-        
-        if product_name:
-            products = products.filter(name__icontains=product_name)
+    product_type = request.GET.get('product_type')
+    product_brand = request.GET.get('brand')
+
+    print(f"Product Name: {product_type}, Product Brand: {product_brand}")
+
+    if product_type or product_brand:
+        if product_type:  
+            products = products.filter(product_type__icontains=product_type)
         if product_brand:
-            products = products.filter(brand__icontains=product_brand)
+            products = products.filter(product_brand__icontains=product_brand)
 
     context = {
         'products': products,
@@ -39,29 +41,13 @@ def show_products(request):
     }
     return render(request, "catalogue.html", context)
 
-# Add Product
-@superuser_required
-@login_required
-def add_product(request):
-    form = AddProductForm(request.POST or None)
-
-    if form.is_valid() and request.method == "POST":
-        product_entry = form.save(commit=False)
-        product_entry.user = request.user
-        product_entry.save()
-        return redirect('main:show_main')
-
-    context = {'form': form}
-    return render(request, "create_product.html", context)
-
-
 # Editing product
 @superuser_required
 @login_required
 def edit_product(request):
     product = Products.objects.get()
 
-    form = Products(request.POST or None, instance=product)
+    form = AddProductForm(request.POST or None, instance=product)
 
     if form.is_valid() and request.method == "POST":
         form.save()
@@ -79,6 +65,7 @@ def delete_product():
     product.delete()
 
     return HttpResponseRedirect(reverse('main:show_main'))
+
 @csrf_exempt
 @require_POST
 def add_product_entry(request):
@@ -89,15 +76,20 @@ def add_product_entry(request):
     price = strip_tags(request.POST.get("price"))
     user = request.user
 
-    new_product = Products(
-        name=product_name, brand=product_brand,
-        product_type=product_type, description=product_description,
-        price=price,
-        user=user
-    )
-    new_product.save()
-
-    return HttpResponse(b"CREATED", status=201)
+    if not all([product_name, product_brand, product_type, product_description, price]):
+        return JsonResponse({"error": "Fill in all required fields!"}, status=400)
+    
+    try:
+        new_product = Products(
+            name=product_name, brand=product_brand,
+            product_type=product_type, description=product_description,
+            price=price,
+            user=user
+        )
+        new_product.save()
+        return HttpResponse(b"Product Added Successfully.", status=201)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
 
 def get_product(request):
     data = Products.objects.all()
