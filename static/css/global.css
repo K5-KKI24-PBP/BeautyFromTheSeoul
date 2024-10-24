@@ -1,3 +1,12 @@
 body {
     font-family: 'Kotta One', serif;
 }
+
+.zoom-effect {
+    transition: transform 0.3s ease; 
+}
+  
+.zoom-effect:hover {
+    transform: scale(1.1); 
+}
+  
