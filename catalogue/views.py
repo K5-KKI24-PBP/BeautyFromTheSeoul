@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
 from catalogue.forms import AddProductForm, ProductFilterForm
 from catalogue.models import Products
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.urls import reverse
 from functools import wraps
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
 
 # Create your views here.
 def superuser_required(view_func):
@@ -22,12 +26,12 @@ def show_products(request):
     
     if form.is_valid():
         product_name = form.cleaned_data.get('name')
-        brand = form.cleaned_data.get('brand')  
+        product_brand = form.cleaned_data.get('brand')  
         
         if product_name:
             products = products.filter(name__icontains=product_name)
-        if brand:
-            products = products.filter(brand__icontains=brand)
+        if product_brand:
+            products = products.filter(brand__icontains=product_brand)
 
     context = {
         'products': products,
@@ -75,5 +79,27 @@ def delete_product():
     product.delete()
 
     return HttpResponseRedirect(reverse('main:show_main'))
+@csrf_exempt
+@require_POST
+def add_product_entry(request):
+    product_name = strip_tags(request.POST.get("name"))
+    product_brand = strip_tags(request.POST.get("brand"))
+    product_type  = strip_tags(request.POST.get("product_type"))
+    product_description = strip_tags(request.POST.get("description"))
+    price = strip_tags(request.POST.get("price"))
+    user = request.user
 
+    new_product = Products(
+        name=product_name, brand=product_brand,
+        product_type=product_type, description=product_description,
+        price=price,
+        user=user
+    )
+    new_product.save()
 
+    return HttpResponse(b"CREATED", status=201)
+
+def get_product(request):
+    data = Products.objects.all()
+    return HttpResponse(serializers.serialize('json', data), content_type='application/json')
+    
