@@ -3,6 +3,45 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-<h2>Your Favorite Skincare Products</h2>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favorites</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}"> <!-- Link to your external CSS file -->
+</head>
+
+<div class="container">
+    <header>
+        <h1>My Favorites</h1>
+        <div class="filter-sort">
+            <label for="sort">Sort by:</label>
+            <select id="sort" name="sort">
+                <option value="price">Price</option>
+                <option value="name">Name</option>
+                <option value="brand">Brand</option>
+            </select>
+            <div class="filter-buttons">
+                <button>Filter 1</button>
+                <button>Filter 2</button>
+            </div>
+        </div>
+    </header>
+
+    {% if favorites %}
+    <p>Your favorites</p>
+
+    {% for favorite in favorites %}
+    <div>
+        <p>{{ favorite.product.product_name }} - {{ favorite.product.product_price }}</p>
+        <!-- Display other product details -->
+    </div>
+    {% endfor %}        
+
+    {% else %}
+    <p></p>
+    <p> You do not have any favorite skincare products</p>
+    {% endif %}
+</div>   
+
 
 {% endblock content%}
