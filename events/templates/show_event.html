@@ -2,54 +2,86 @@
 {% load static %}
 {% block content %}
 {% include 'navbar.html' %}
-<div>
-    <h1>Promotion Events</h1>
-</div>
-{% if not events %}
-<p>There are no promotion events.</p>
-{% else %}
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Start date</th>
-    <th>End date</th>
-    <th>Description</th>
-    <th>Location</th>
-    <th>Promotion type</th>
-  </tr>
+<head>
 
-  {% for event in events %}
-  <tr>
-    <td>{{event.name}}</td>
-    <td>{{event.start_date}}</td>
-    <td>{{event.end_date}}</td>
-    <td>{{event.description}}</td>
-    <td>{{event.location}}</td>
-    <td>{{event.promotion_type}}</td>
-    <td>
-      {% if user.is_superuser %}
-        <a href="{% url 'events:edit_event' event.id %}">
-            <button>Edit Event</button>
-        </a>
-      {% endif %}
-    </td>
-    <td>
-      {% if user.is_superuser %}
-        <a href="{% url 'events:delete_event' event.id %}">
-            <button>Delete Event</button>
-        </a>
-      {% endif %}
-    </td>
-  </tr>
-  {% endfor %}
-</table>
-{% endif %}
-
-<br />
-
-{% if user.is_superuser %}
-<a href="{% url 'events:create_event' %}">
-  <button>Add Event</button>
-</a>
-{% endif %}
+</head>
+<body>
+  <div class="container">
+      <h1 style="margin: 10px 0px;" class="mt-3">Promotion Events</h1>
+      <hr class="hr">
+  </div>
+  {% if user.is_superuser %}
+  <div class="container">
+    <div style="text-align: right; margin-bottom: 10px;">
+      <a href="{% url 'events:create_event' %}">
+        <button type="button" class="btn"
+            style="background-color: #7493b0; --bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem; color: white;">
+          Add Event
+        </button>
+      </a>
+    </div>
+  </div>
+  {% endif %}
+  <div style="margin-left: 20px; margin-right: 20px;">
+    {% if not events %}
+      <p>There are no promotion events.</p>
+    {% else %}
+      <div class="container">
+        <div class="row">
+          {% for event in events %}
+            <div id="event-cards" class="col-12 col-sm-6 col-lg-3 mb-4 d-flex flex-wrap">
+              <div class="card event-card card flex-fill" style="width: 20rem; margin-bottom: 10px; border-color: black; margin-top: 10px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div class="card-header" style="background-color: #a5d1fb; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 10px;">
+                  {{ event.name }} in {{ event.location }}
+                </div>
+                <div class="card-body">
+                  <h5 class="card-description">{{ event.description }}</h5>
+                  <p class="card-text">{{ event.start_date }} - {{ event.end_date }}</p>
+                  <p class="card-text">{{ event.promotion_type }}</p>
+            
+                  {% if user.is_superuser %}
+                    <div class="d-flex flex-wrap justify-content">
+                      <div class="btn-group" role="group" style="margin-top: auto;">
+                        <a href="{% url 'events:edit_event' event.id %}">
+                            <button type="button" class="btn" style="background-color: #7493b0;;  --bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem; margin-right: 5px; color: white;">
+                                Edit
+                            </button>
+                        </a>
+                        <a href="{% url 'events:delete_event' event.id %}">
+                            <button type="button" class="btn" style="background-color: #7493b0; --bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem; margin-left: 5px; color: white;">
+                                Delete
+                            </button>
+                        </a>
+                      </div>
+                    </div>
+                  {% endif %}        
+                  {% if not user.is_superuser %}
+                    {% if rsvp.rsvp_status %}
+                      <a href="{% url 'events:delete_rsvp' event.id %}">
+                        <button type="button" class="btn btn-success" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem;">
+                          RSVPd
+                        </button>
+                      </a>
+                    {% else %}
+                      <a href="{% url 'events:rsvp_event' event.id %}">
+                        <button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem;">
+                          RSVP
+                        </button>
+                      </a>
+                    {% endif %}
+                  {% endif %}                  
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>  
+      </div>
+    {% endif %}
+  </div>
+</body>
 {% endblock content%}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+</script>

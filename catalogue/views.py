@@ -26,18 +26,22 @@ def show_products(request):
     
     product_type = request.GET.get('product_type')
     product_brand = request.GET.get('brand')
+    image = request.GET.get('image')
 
-    print(f"Product Name: {product_type}, Product Brand: {product_brand}")
+    print(f"Product Name: {product_type}, Product Brand: {product_brand}, Image: {image}")
 
-    if product_type or product_brand:
+    if product_type or product_brand or image:
         if product_type:  
             products = products.filter(product_type__icontains=product_type)
         if product_brand:
             products = products.filter(product_brand__icontains=product_brand)
+        if image:
+            products = products.filter(image__icontains=image)
 
     context = {
         'products': products,
-        'form': form
+        'form': form,
+        'product_form': AddProductForm()
     }
     return render(request, "catalogue.html", context)
 
@@ -59,35 +63,39 @@ def edit_product(request):
 # Delete Product
 @superuser_required
 @login_required
-def delete_product():
-    product = Products.objects.get()
-    
-    product.delete()
-
-    return HttpResponseRedirect(reverse('main:show_main'))
+@require_POST
+def delete_product(request, product_id):
+    try:
+        product = Products.objects.get(pk=product_id)
+        product.delete()
+        return redirect(reverse('catalogue:show_products'))
+    except Products.DoesNotExist:
+        return JsonResponse({"error": "Product not found."}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
 
 @csrf_exempt
 @require_POST
 def add_product_entry(request):
-    product_name = strip_tags(request.POST.get("name"))
-    product_brand = strip_tags(request.POST.get("brand"))
+    image= strip_tags(request.POST.get("image"))
+    product_name = strip_tags(request.POST.get("product_name"))
+    product_brand = strip_tags(request.POST.get("product_brand"))
     product_type  = strip_tags(request.POST.get("product_type"))
-    product_description = strip_tags(request.POST.get("description"))
+    product_description = strip_tags(request.POST.get("product_description"))
     price = strip_tags(request.POST.get("price"))
-    user = request.user
+    
 
-    if not all([product_name, product_brand, product_type, product_description, price]):
+    if not all([image, product_name, product_brand, product_type, product_description, price]):
         return JsonResponse({"error": "Fill in all required fields!"}, status=400)
     
     try:
         new_product = Products(
-            name=product_name, brand=product_brand,
-            product_type=product_type, description=product_description,
-            price=price,
-            user=user
+            product_name=product_name, product_brand=product_brand,
+            product_type=product_type, product_description=product_description,
+            price=price, image=image,
         )
         new_product.save()
-        return HttpResponse(b"Product Added Successfully.", status=201)
+        return redirect(reverse('catalogue:show_products'))
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
 

@@ -1,11 +1,34 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from locator.forms import StoreLocationForm
 from locator.models import Locations
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 def show_locator(request):
-    return render(request, 'locator.html')
+    locations = Locations.objects.all()
+    districts = Locations.objects.values_list('district', flat=True).distinct()
+    context = {
+        "user": request.user,
+        "locations": locations,
+        "districts": districts
+    }
+    return render(request, 'locator.html', context)
+
+def filter_locations(request):
+    district = request.GET.get('district', '')
+    if district:
+        locations = Locations.objects.filter(district=district)
+    else:
+        locations = Locations.objects.all()
+
+    print("Filtered locations:", locations)  # Debugging print statement
+    data = serializers.serialize('json', locations)
+    print("Serialized data:", data)  # Debugging print statement
+    return JsonResponse(data, safe=False)
+
+
 
 def create_location_entry(request):
     form = StoreLocationForm(request.POST)
@@ -18,6 +41,39 @@ def create_location_entry(request):
 
     context = {'form': form}
     return render(request, "location_entry.html", context)
+
+def delete_location(request, id):
+    location = Locations.objects.get(pk = id)
+    location.delete()
+    return HttpResponseRedirect(reverse('locator:locator'))
+
+def edit_location(request, id):
+    location = Locations.objects.get(pk = id)
+
+    form = StoreLocationForm(request.POST or None, instance=location)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return HttpResponseRedirect(reverse('locator:locator'))
+
+    context = {'form': form}
+    return render(request, "edit_location.html", context)
+
+# @csrf_exempt
+# @require_POST
+# def create_location_ajax(request):
+#     store_name = request.POST.get("store_name")
+#     street_name = request.POST.get("street_name")
+#     district = request.POST.get("district")
+#     gmaps_link = request.POST.get("gmaps_link")
+
+#     new_location = Locations(
+#         store_name=store_name, street_name=street_name,
+#         district=district, gmaps_link=gmaps_link,
+#     )
+#     new_location.save()
+
+#     return HttpResponse(b"CREATED", status=201)
 
 def show_xml(request):
     data = Locations.objects.all()
