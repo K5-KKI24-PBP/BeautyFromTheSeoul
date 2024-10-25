@@ -1,18 +1,33 @@
 from django.shortcuts import render, redirect, reverse
 from locator.forms import StoreLocationForm
 from locator.models import Locations
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 def show_locator(request):
     locations = Locations.objects.all()
+    districts = Locations.objects.values_list('district', flat=True).distinct()
     context = {
         "user": request.user,
-        "locations": locations
+        "locations": locations,
+        "districts": districts
     }
     return render(request, 'locator.html', context)
+
+def filter_locations(request):
+    district = request.GET.get('district', '')
+    if district:
+        locations = Locations.objects.filter(district=district)
+    else:
+        locations = Locations.objects.all()
+
+    print("Filtered locations:", locations)  # Debugging print statement
+    data = serializers.serialize('json', locations)
+    print("Serialized data:", data)  # Debugging print statement
+    return JsonResponse(data, safe=False)
+
 
 
 def create_location_entry(request):
