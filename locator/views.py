@@ -30,7 +30,7 @@ def create_location_entry(request):
 def delete_location(request, id):
     location = Locations.objects.get(pk = id)
     location.delete()
-    return HttpResponseRedirect(reverse('main:show_locator'))
+    return HttpResponseRedirect(reverse('locator:locator'))
 
 def edit_location(request, id):
     location = Locations.objects.get(pk = id)
@@ -39,7 +39,7 @@ def edit_location(request, id):
 
     if form.is_valid() and request.method == "POST":
         form.save()
-        return HttpResponseRedirect(reverse('main:show_locator'))
+        return HttpResponseRedirect(reverse('locator:locator'))
 
     context = {'form': form}
     return render(request, "edit_location.html", context)

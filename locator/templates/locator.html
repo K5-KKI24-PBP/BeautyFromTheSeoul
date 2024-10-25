@@ -19,27 +19,31 @@
         {% endif %}
     </div>
 
-    <div id="location_cards">
+
+    <div class="row d-flex align-items-stretch mb-4 mt-4" id="location_cards">
         {% for location in locations %}
-        <div class="card" style="width: 18rem;">
-            <img src="{{ location.store_image }}" class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">{{ location.store_name }}</h5>
-                <p class="card-text">{{ location.street_name }}, {{ location.district }}</p>
-                <a href="{{ location.gmaps_link }}" class="btn btn-primary">How Do I Get There?</a>
-                {% if request.user.is_staff %}
-                    <form method="post" action="{% url 'locator:delete_location' location.pk %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                    <a href="{% url 'locator:edit_location' location.pk %}">
-                        <button type="submit" class="btn btn-warning">Edit</button>
-                    </a>
-                {% endif %}
+        <div class="col-md-3 d-flex align-items-stretch mb-4">
+            <div class="card h-100 w-100">
+                <img src="{{ location.store_image }}" class="card-img-top" alt="store-image" style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ location.store_name }}</h5>
+                    <p class="card-text">{{ location.street_name }}, {{ location.district }}</p>
+                    <a href="{{ location.gmaps_link }}" class="btn btn-primary mt-auto">How Do I Get There?</a>
+                    {% if request.user.is_staff %}
+                        <form method="post" action="{% url 'locator:delete_location' location.pk %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger mt-2">Delete</button>
+                        </form>
+                        <a href="{% url 'locator:edit_location' location.pk %}">
+                            <button type="button" class="btn btn-warning mt-2">Edit</button>
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
         {% endfor %}
     </div>
+
 </div>
 
 
