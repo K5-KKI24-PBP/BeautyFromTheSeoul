@@ -1,31 +1,32 @@
 {% extends 'base.html' %} 
 {% block content %}
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</head>
+<h1>Submit a Store Location</h1>
 
-<div class="container-sm">
-  <h1>Add Location Entry</h1>
 
-  <form method="POST">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <div class="mb-3 col">
-      <label for="input_storename" class="form-label">Store Name:</label>
-      <input type="text" class="form-control" id="input_storename" name="store_name">
+    <div class="mb-3">
+      {{ form.store_name.label_tag }}
+      {{ form.store_name }}
     </div>
-    <div class="mb-3 col">
-      <label for="input_store_address" class="form-label">Store Address:</label>
-      <input type="text" class="form-control" id="input_store_address" name="store_address">
+    <div class="mb-3">
+      {{ form.street_name.label_tag }}
+      {{ form.street_name }}
     </div>
-    <div class="mb-3 col">
-      <label for="input_website" class="form-label">Website (optional):</label>
-      <input type="url" class="form-control" id="input_website" name="website">
+    <div class="mb-3">
+      {{ form.district.label_tag }}
+      {{ form.district }}
+    </div>
+    <div class="mb-3">
+      {{ form.gmaps_link.label_tag }}
+      {{ form.gmaps_link }}
+    </div>
+    <div class="mb-3">
+      {{ form.store_image.label_tag }}
+      {{ form.store_image }}
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
-  </form> 
-</div>
+</form>
 
 
-
-{% endblock content %}
+{% endblock %}
