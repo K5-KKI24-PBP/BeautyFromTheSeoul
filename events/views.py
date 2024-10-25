@@ -23,22 +23,9 @@ def superuser_required(view_func):
 
 def show_events(request):
     events = Events.objects.all().order_by('start_date')
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    
-    if request.user.is_authenticated:
-        event_rsvp = {}
-        for event in events:
-            rsvp = RSVP.objects.get_or_create(event=event, user=user_profile)
-            event_rsvp[event.id] = rsvp
-        context = {
-            'events': events,
-            'event_rsvp': event_rsvp,
-        }
-    else:
-        context = {
-            'events': events,
-        }
-
+    context = {
+        'events': events
+    }
     return render(request, 'show_event.html', context)
 
 @login_required(login_url='authentication:login')
