@@ -17,7 +17,6 @@ def show_main(request):
     }
     return render(request, "main.html", context)
 
-
 def create_ad(request):
     if request.method == 'POST':
         form = AdForm(request.POST, request.FILES)

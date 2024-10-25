@@ -12,9 +12,33 @@
         </div>
     </div>
     <div>
+        {% if request.user.is_staff %}
         <a href="{% url 'locator:location_entry' %}">
-            <button>Add New Location Entry</button>
+            <button type="button" class="btn mt-2" style="background-color: #99D3FF;">Add New Store</button>
         </a>
+        {% endif %}
+    </div>
+
+    <div id="location_cards">
+        {% for location in locations %}
+        <div class="card" style="width: 18rem;">
+            <img src="{{ location.store_image }}" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">{{ location.store_name }}</h5>
+                <p class="card-text">{{ location.street_name }}, {{ location.district }}</p>
+                <a href="{{ location.gmaps_link }}" class="btn btn-primary">How Do I Get There?</a>
+                {% if request.user.is_staff %}
+                    <form method="post" action="{% url 'locator:delete_location' location.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    <a href="{% url 'locator:edit_location' location.pk %}">
+                        <button type="submit" class="btn btn-warning">Edit</button>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
 
