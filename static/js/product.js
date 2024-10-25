@@ -1,4 +1,8 @@
 function openProductModal(productId = null) {
+    console.log(document.getElementById('productModal'));
+    var productModal = new bootstrap.Modal(document.getElementById('productModal'));
+    productModal.show();
+    
     const modalTitle = document.getElementById('productModalLabel');
     const formFields = document.getElementById('formFields');
     const productForm = document.getElementById('productForm');
@@ -21,6 +25,7 @@ function openProductModal(productId = null) {
             });
     }
 }
+
 
 document.getElementById('productForm').addEventListener('submit', function(event) {
     event.preventDefault();
