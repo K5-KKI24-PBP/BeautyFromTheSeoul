@@ -8,6 +8,10 @@
 {% block content %}
 {% include 'navbar.html' %}
 
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+</head>
+
 <h1 class="text-center">PRODUCTS</h1>
 <p class="text-center">Find What You're Looking For!</p>
 
@@ -29,7 +33,6 @@
 
 {% endif %} 
 
-
 <div class="container">
     <div class="row">
         {% if not products %}
@@ -47,6 +50,8 @@
                     <h5 class="card-title" style="text-align: left;">{{ product.product_name }}</h5>
                     <p class="card-text" style="text-align: left;">{{ product.product_brand }}</p>
                     <p class="card-text" style="text-align: left;">{{ product.product_type }}</p>
+
+                    
                     <!-- Button to trigger modal -->
                     <div class="d-flex justify-content-between">
                       {% if user.is_superuser %}
@@ -58,6 +63,36 @@
                       <div style="text-align: right; margin-top: -10px;">
                           <button class="btn btn-secondary" data-toggle="modal" data-target="#productModal{{ forloop.counter }}">View</button>
                       </div>
+
+                      <!-- Favorites Button -->
+                      <style>
+                        .heart-button {
+                            background-color: transparent;
+                            border: none;
+                            color: #f2446a;
+                            font-size: 1.5rem;
+                            cursor: pointer;
+                            transition: color 0.3s; /* Optional smooth color transition */
+                        }
+                        .heart-button:hover {
+                            color: #ff7b91; /* Change to desired hover color */
+                        }
+                        </style>
+
+                        <div style="text-align: right; margin-top: -10px;">
+                            <form method="POST" action="{% url 'favorites:add_favorites' product.product_id %}">
+                                {% csrf_token %}
+                                <button type="submit" 
+                                    id="favoriteButton" 
+                                    class="btn bi-heart" 
+                                    style="background-color: transparent; border: none; color: #f2446a; font-size: 1.5rem;"
+                                    onclick="toggleFavorite(this);"
+                                    onmouseover="this.classList.add('bi-heart-fill');"
+                                    onmouseout="if(!this.classList.contains('favorite-added')) this.classList.remove('bi-heart-fill');">
+                                </button>
+                            </form>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -93,6 +128,10 @@
         </div>
         {% endfor %}
         {% endif %}
+
+        <div style="text-align: right; margin-top: -10px;">
+            <button class="btn btn-secondary" data-toggle="modal" data-target="#productModal{{ forloop.counter }}">View</button>
+        </div>
     </div>
 </div>
 
@@ -134,4 +173,5 @@
         });
     });
 </script>
+
 {% endblock scripts %}
