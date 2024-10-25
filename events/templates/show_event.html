@@ -10,6 +10,12 @@
       <h1 style="margin: 10px 0px;" class="mt-3">Promotion Events</h1>
       <hr class="hr">
   </div>
+  <div class="container">
+    <label for="eventFilter" class="form-label">Filter:</label>
+    <input type="month" id="monthInput">
+    <button id="eventFilter" type="button" class="btn"
+    style="background-color: #7493b0; --bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem; color: white;">Filter Events</button>
+  </div>
   {% if user.is_superuser %}
   <div class="container">
     <div style="text-align: right; margin-bottom: 10px;">
@@ -40,7 +46,7 @@
                   <p class="card-text">{{ event.promotion_type }}</p>
             
                   {% if user.is_superuser %}
-                    <div class="d-flex flex-wrap justify-content">
+                    <div class="aligns-items-end">
                       <div class="btn-group" role="group" style="margin-top: auto;">
                         <a href="{% url 'events:edit_event' event.id %}">
                             <button type="button" class="btn" style="background-color: #7493b0;;  --bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem; margin-right: 5px; color: white;">
@@ -56,19 +62,19 @@
                     </div>
                   {% endif %}        
                   {% if not user.is_superuser %}
-                    {% if rsvp.rsvp_status %}
-                      <a href="{% url 'events:delete_rsvp' event.id %}">
-                        <button type="button" class="btn btn-success" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem;">
-                          RSVPd
-                        </button>
-                      </a>
-                    {% else %}
-                      <a href="{% url 'events:rsvp_event' event.id %}">
-                        <button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem;">
-                          RSVP
-                        </button>
-                      </a>
-                    {% endif %}
+                    <div class="text-align: left">
+                      {% if rsvp %}
+                        <!-- If RSVP status is True, show Cancel button -->
+                        <a href="{% url 'events:delete_rsvp' event.id %}">
+                          <button class="btn btn-success">Cancel</button>
+                        </a>
+                      {% else %}
+                        <!-- If not RSVPd, show RSVP button -->
+                        <a href="{% url 'events:rsvp_event' event.id %}">
+                          <button class="btn btn-primary">RSVP</button>
+                        </a>
+                      {% endif %}
+                    </div>
                   {% endif %}                  
                 </div>
               </div>
@@ -79,9 +85,40 @@
     {% endif %}
   </div>
 </body>
-{% endblock content%}
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
+<script>  
+  document.getElementById('eventFilter').addEventListener('change', function() {
+      let month = document.getElementById('monthInput').value;
 
+      if (monthInput) {
+        let [year, month] = month.split('-');
+        fetch(`{% url 'events:filter_events' %}?month=${encodeURIComponent(month)}&year=${encodeURIComponent(year)}`)
+            .then(response => response.json())
+            .then(data => {
+                let event_cards = document.getElementById('event-cards');
+                event_cards.innerHTML = ''; 
+                
+                JSON.parse(data).forEach(item => {
+                    let fields = item.fields;
+                    eventCards.innerHTML += `
+                      <div class="col-md-3 d-flex align-items-stretch mb-4">
+                          <div class="card h-100 w-100">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">${event.name} in ${event.locaion}</h5>
+                                <p class="card-text">${event.description}</p>
+                                <p class="card-date">${event.start_date} to ${event.end_date}</p>
+                                <p class="card-text">${event.promotion_type}</p>
+                            </div>
+                          </div>
+                      </div>
+                    `;
+                    
+                });
+            })
+            .catch(error => console.error('Error:', error));
+      }
+  });
 </script>
+
+{% endblock content %}
