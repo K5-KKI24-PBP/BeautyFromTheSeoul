@@ -2,54 +2,119 @@
 {% load static %}
 {% block content %}
 {% include 'navbar.html' %}
-<div>
-    <h1>Promotion Events</h1>
-</div>
-{% if not events %}
-<p>There are no promotion events.</p>
-{% else %}
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Start date</th>
-    <th>End date</th>
-    <th>Description</th>
-    <th>Location</th>
-    <th>Promotion type</th>
-  </tr>
+<head>
 
-  {% for event in events %}
-  <tr>
-    <td>{{event.name}}</td>
-    <td>{{event.start_date}}</td>
-    <td>{{event.end_date}}</td>
-    <td>{{event.description}}</td>
-    <td>{{event.location}}</td>
-    <td>{{event.promotion_type}}</td>
-    <td>
-      {% if user.is_superuser %}
-        <a href="{% url 'events:edit_event' event.id %}">
-            <button>Edit Event</button>
-        </a>
-      {% endif %}
-    </td>
-    <td>
-      {% if user.is_superuser %}
-        <a href="{% url 'events:delete_event' event.id %}">
-            <button>Delete Event</button>
-        </a>
-      {% endif %}
-    </td>
-  </tr>
-  {% endfor %}
-</table>
-{% endif %}
-
-<br />
-
-{% if user.is_superuser %}
-<a href="{% url 'events:create_event' %}">
-  <button>Add Event</button>
-</a>
-{% endif %}
+</head>
+<body>
+  <div>
+      <h1 style="margin: 15px 0px 15px 20px;">Promotion Events</h1>
+  </div>
+  {% if user.is_superuser %}
+  <div style="text-align: right; margin-bottom: 10px; margin-right: 10px;">
+    <a href="{% url 'events:create_event' %}">
+      <button type="button" class="btn btn-primary"
+          style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem; margin-left: 10px;">
+        Add Event
+      </button>
+    </a>
+  </div>
+  {% endif %}
+  <div style="margin-left: 20px; margin-right: 20px;">
+    {% if not events %}
+      <p>There are no promotion events.</p>
+    {% else %}
+      <div>
+        <div class="row">
+          {% for event in events %}
+            <div class="col-12 col-sm-6 col-lg-3 mb-4">
+              <div class="card event-card" style="width: 20rem; margin-bottom: 10px; border-color: black;">
+                <div class="card-header" style="background-color: #f19ecf;">
+                    {{ event.name }} in {{ event.location }}
+                </div>
+                <div class="card-body">
+                  <h5 class="card-description">{{ event.description }}</h5>
+                  <p class="card-text">{{ event.start_date }} - {{ event.end_date }}</p>
+                  <p class="card-text">{{ event.promotion_type }}</p>
+            
+                  {% if user.is_superuser %}
+                    <div class="btn-group" role="group">
+                      <a href="{% url 'events:edit_event' event.id %}">
+                          <button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem; margin-right: 5px;">
+                              Edit
+                          </button>
+                      </a>
+                      <a href="{% url 'events:delete_event' event.id %}">
+                          <button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem; margin-left: 5px;">
+                              Delete
+                          </button>
+                      </a>
+                    </div> 
+                  {% endif %}        
+                  {% if not user.is_superuser %}
+                    <!-- Single Button with conditional text based on RSVP status -->
+                    <button type="button" id="rsvp-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rsvpModal" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 1rem;">
+                      {% if not rsvp.rsvp_status %}
+                        RSVP
+                      {% else %}
+                        Cancel RSVP
+                      {% endif %}
+                    </button>
+                  
+                    <!-- Modal -->
+                    <div class="modal fade" id="rsvpModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">
+                              {% if not rsvp.rsvp_status %}
+                                RSVP
+                              {% else %}
+                                Cancel RSVP
+                              {% endif %}
+                            </h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            {% if not rsvp.rsvp_status %}
+                              You have successfully RSVP'd to this event. Can't wait to see you there!
+                            {% else %}
+                              You have successfully cancelled your RSVP to this event. Hope to see you next time!
+                            {% endif %}
+                          </div>
+                          <div class="modal-footer">
+                            <a id="modal-action-link" href="{% if not rsvp.rsvp_status %}{% url 'events:rsvp_event' event.id %}{% else %}{% url 'events:delete_rsvp' event.id %}{% endif %}">
+                              <button type="button" class="btn btn-primary">
+                                {% if not rsvp.rsvp_status %}
+                                  Confirm RSVP
+                                {% else %}
+                                  Confirm Cancellation
+                                {% endif %}
+                              </button>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}                  
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>  
+      </div>
+    {% endif %}
+  </div>
+</body>
 {% endblock content%}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.getElementById('modal-action-link').addEventListener('click', function() {
+    let rsvpBtn = document.getElementById('rsvp-btn');
+    if (rsvpBtn.innerText === 'RSVP') {
+        rsvpBtn.innerText = 'Cancel RSVP';
+    } else {
+        rsvpBtn.innerText = 'RSVP';
+    }
+});
+</script>
