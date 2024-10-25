@@ -9,4 +9,5 @@ class Products(models.Model):
     product_type = models.CharField(max_length=100)
     product_description = models.TextField()
     price = models.CharField(max_length=100)
+    image = models.URLField()
 

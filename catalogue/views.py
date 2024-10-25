@@ -26,14 +26,17 @@ def show_products(request):
     
     product_type = request.GET.get('product_type')
     product_brand = request.GET.get('brand')
+    image = request.GET.get('image')
 
-    print(f"Product Name: {product_type}, Product Brand: {product_brand}")
+    print(f"Product Name: {product_type}, Product Brand: {product_brand}, Image: {image}")
 
-    if product_type or product_brand:
+    if product_type or product_brand or image:
         if product_type:  
             products = products.filter(product_type__icontains=product_type)
         if product_brand:
             products = products.filter(product_brand__icontains=product_brand)
+        if image:
+            products = products.filter(image__icontains=image)
 
     context = {
         'products': products,
@@ -69,6 +72,7 @@ def delete_product():
 @csrf_exempt
 @require_POST
 def add_product_entry(request):
+    image= strip_tags(request.POST.get("image"))
     product_name = strip_tags(request.POST.get("name"))
     product_brand = strip_tags(request.POST.get("brand"))
     product_type  = strip_tags(request.POST.get("product_type"))
@@ -76,14 +80,14 @@ def add_product_entry(request):
     price = strip_tags(request.POST.get("price"))
     user = request.user
 
-    if not all([product_name, product_brand, product_type, product_description, price]):
+    if not all([image, product_name, product_brand, product_type, product_description, price]):
         return JsonResponse({"error": "Fill in all required fields!"}, status=400)
     
     try:
         new_product = Products(
             name=product_name, brand=product_brand,
             product_type=product_type, description=product_description,
-            price=price,
+            price=price, image=image,
             user=user
         )
         new_product.save()

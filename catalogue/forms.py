@@ -5,9 +5,10 @@ from django.forms import ModelForm
 class ProductFilterForm(forms.Form):
     product_brand = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Brand'}))
     product_type = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Product Type'}))
+    image = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Image'}))
 
 
 class AddProductForm(forms.ModelForm):
     class Meta:
         model = Products
-        fields = ['product_name', 'product_brand', 'product_type', 'product_description', 'price']
+        fields = ['product_name', 'product_brand', 'product_type', 'product_description', 'price', 'image']
