@@ -7,7 +7,17 @@
 
 {% block content %}
 {% include 'navbar.html' %}
+<<<<<<< Updated upstream
 <h1>Product Catalogue</h1>
+=======
+
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+</head>
+
+<h1 class="text-center">PRODUCTS</h1>
+<p class="text-center">Find What You're Looking For!</p>
+>>>>>>> Stashed changes
 
 <!-- Filter Form -->
 <form method="GET" action="{% url 'catalogue:show_products' %}" class="form-inline mb-3">
@@ -26,6 +36,7 @@
 </div>
 {% endif %}
 
+<<<<<<< Updated upstream
 {% if not products %}
 <p>There are no products available now.</p>
 {% else %}
@@ -40,6 +51,112 @@
         <th>Actions</th>
         {% endif %}
     </tr>
+=======
+{% endif %} 
+
+
+<div class="container">
+    <div class="row">
+        {% if not products %}
+        <p class="text-center">There are no products available now.</p>
+        {% else %}
+        {% for product in products %}
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <!-- Placeholder image or product image -->
+                <div class="product-image-placeholder" style="background-color: #f2f2f2; width: 100%; height: 250px;">
+                    <img src="{{ product.image }}" alt="{{ product.product_name }}" class="img-fluid" style="object-fit: contain; width: 100%; height: 100%;">
+                </div>
+                <div class="card-body">
+                    <!-- Aligning product name and brand to the left -->
+                    <h5 class="card-title" style="text-align: left;">{{ product.product_name }}</h5>
+                    <p class="card-text" style="text-align: left;">{{ product.product_brand }}</p>
+                    <p class="card-text" style="text-align: left;">{{ product.product_type }}</p>
+
+                    
+                    <!-- Button to trigger modal -->
+                    <div class="d-flex justify-content-between">
+                      {% if user.is_superuser %}
+                      <form method="POST" action="{% url 'catalogue:delete_product' product.product_id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                      </form>
+                      {% endif %}
+                      <div style="text-align: right; margin-top: -10px;">
+                          <button class="btn btn-secondary" data-toggle="modal" data-target="#productModal{{ forloop.counter }}">View</button>
+                      </div>
+
+                      <!-- Favorites Button -->
+                      <style>
+                        .heart-button {
+                            background-color: transparent;
+                            border: none;
+                            color: #f2446a;
+                            font-size: 1.5rem;
+                            cursor: pointer;
+                            transition: color 0.3s; /* Optional smooth color transition */
+                        }
+                        .heart-button:hover {
+                            color: #ff7b91; /* Change to desired hover color */
+                        }
+                        </style>
+
+                        <div style="text-align: right; margin-top: -10px;">
+                            <form method="POST" action="{% url 'favorites:add_favorites' product.product_id %}">
+                                {% csrf_token %}
+                                <button type="submit" 
+                                    id="favoriteButton" 
+                                    class="btn bi-heart" 
+                                    style="background-color: transparent; border: none; color: #f2446a; font-size: 1.5rem;"
+                                    onclick="toggleFavorite(this);"
+                                    onmouseover="this.classList.add('bi-heart-fill');"
+                                    onmouseout="if(!this.classList.contains('favorite-added')) this.classList.remove('bi-heart-fill');">
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for each product -->
+        <div class="modal fade" id="productModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="productModalLabel{{ forloop.counter }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productModalLabel{{ forloop.counter }}">{{ product.product_name }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="{{ product.image }}" alt="{{ product.product_name }}" class="img-fluid" style="object-fit: contain; width: 100%; height: auto;">
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Brand: {{ product.product_brand }}</h5>
+                                <p style="text-align: justify;">{{ product.price }}</p>
+                                <p style="text-align: justify;">{{ product.product_description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <div style="text-align: right; margin-top: -10px;">
+            <button class="btn btn-secondary" data-toggle="modal" data-target="#productModal{{ forloop.counter }}">View</button>
+        </div>
+    </div>
+</div>
+>>>>>>> Stashed changes
 
     {% for product in products %}
     <tr>
@@ -68,5 +185,23 @@
 {% endblock content %}
 
 {% block scripts %}
+<<<<<<< Updated upstream
 <script src="{% static 'js/product.js' %}"></script>
+=======
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Ensure modal is triggered correctly
+        $('[data-toggle="modal"]').click(function() {
+            var targetModal = $(this).data("target");
+            $(targetModal).modal('show');
+        });
+    });
+</script>
+
+>>>>>>> Stashed changes
 {% endblock scripts %}
