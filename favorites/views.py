@@ -8,7 +8,7 @@ def show_favorites(request):
     if not request.user.is_authenticated:
         return render(request, 'not_logged_in.html')  # Render a custom template
 
-    favorites = Favorite.objects.filter(user=request.user).select_related('skincare_product')
+    favorites = Favorite.objects.filter(user=request.user).select_related('skincare_product').order_by('-created_at')
     return render(request, 'favorites.html', {'favorites': favorites})
 
 def add_favorites(request, product_id):
