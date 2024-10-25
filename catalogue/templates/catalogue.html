@@ -38,9 +38,37 @@
                     <!-- Aligning product name and brand to the left -->
                     <h5 class="card-title" style="text-align: left;">{{ product.product_name }}</h5>
                     <p class="card-text" style="text-align: left;">{{ product.product_brand }}</p>
-                    <!-- Move the button higher and align it to the right with a negative margin -->
+                    <!-- Button to trigger modal -->
                     <div style="text-align: right; margin-top: -10px;">
-                        <button class="btn btn-secondary">View</button>
+                        <button class="btn btn-secondary" data-toggle="modal" data-target="#productModal{{ product.id }}">View</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for each product -->
+        <div class="modal fade" id="productModal{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="productModalLabel{{ product.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productModalLabel{{ product.id }}">{{ product.product_name }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="{{ product.image }}" alt="{{ product.product_name }}" class="img-fluid" style="object-fit: contain; width: 100%; height: auto;">
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Brand: {{ product.product_brand }}</h5>
+                                <p style="text-align: justify;">{{ product.product_description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -61,5 +89,15 @@
 {% endblock content %}
 
 {% block scripts %}
-<script src="{% static 'js/product.js' %}"></script>
+<!-- Include jQuery and Bootstrap JS -->
+
+<script>
+    $(document).ready(function() {
+        // Optional: Manually ensure the modal is triggered correctly
+        $('[data-toggle="modal"]').click(function() {
+            var targetModal = $(this).data("target");
+            $(targetModal).modal('show');
+        });
+    });
+</script>
 {% endblock scripts %}
