@@ -19,6 +19,16 @@
         {% endif %}
     </div>
 
+    <div class="col-auto mb-3">
+        <label for="districtFilter" class="form-label">Filter by District:</label>
+        <select id="districtFilter" class="form-select">
+            <option value="">All Districts</option>
+            {% for district in districts %}
+            <option value="{{ district }}">{{ district }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
 
     <div class="row d-flex align-items-stretch mb-4 mt-4" id="location_cards">
         {% for location in locations %}
@@ -45,6 +55,40 @@
     </div>
 
 </div>
+
+<script>
+    
+    document.getElementById('districtFilter').addEventListener('change', function() {
+        let district = this.value;
+
+        fetch(`{% url 'locator:filter_locations' %}?district=${encodeURIComponent(district)}`)
+            .then(response => response.json())
+            .then(data => {
+                let locationCards = document.getElementById('location_cards');
+                locationCards.innerHTML = ''; 
+                
+                JSON.parse(data).forEach(item => {
+                    let fields = item.fields;
+
+                    locationCards.innerHTML += `
+                        <div class="col-md-3 d-flex align-items-stretch mb-4">
+                            <div class="card h-100 w-100">
+                                <img src="${fields.store_image}" class="card-img-top" alt="store-image" style="height: 200px; object-fit: cover;">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">${fields.store_name}</h5>
+                                    <p class="card-text">${fields.street_name}, ${fields.district}</p>
+                                    <a href="${fields.gmaps_link}" class="btn btn-primary mt-auto">How Do I Get There?</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+
+    
 
 
 {% endblock content %}
