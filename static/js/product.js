@@ -26,7 +26,6 @@ function openProductModal(productId = null) {
     }
 }
 
-
 document.getElementById('productForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const formData = new FormData(this);

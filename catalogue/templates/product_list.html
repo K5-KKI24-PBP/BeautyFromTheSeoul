@@ -1,0 +1,12 @@
+<div id="product-list" class="row">
+    {% if not products %}
+        <p class="text-center">There are no products matching the selected filters.</p>
+    {% else %}
+        {% for product in products %}
+            <div class="col-md-4 mb-4">
+                {% include 'product_card.html' %}
+            </div>
+            {% include 'product_detail_modal.html' %}
+        {% endfor %}
+    {% endif %}
+</div>
