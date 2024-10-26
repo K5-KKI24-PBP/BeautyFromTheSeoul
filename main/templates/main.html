@@ -13,32 +13,34 @@
     </div>
     
     <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="{% static 'images/klairs_ad.png' %}" class="d-block w-100" alt="Default Ad" style="width: 700px; height: 500px; object-fit: cover;">
-        <div class="carousel-caption d-none d-md-block">
+      <a href="{% url 'catalogue:show_products' %}">
+        <div class="carousel-item active">
+          <img src="{% static 'images/landing.png' %}" class="d-block w-100" alt="Default Ad" style="width: 700px; height: 500px; object-fit: cover;">
         </div>
-      </div>
+      </a>
 
       {% for ad in ads %}
       <div class="carousel-item">
-        <img src="{{ ad.image }}" class="d-block w-100" alt="{{ ad.brand_name }}" style="width: 700px; height: 500px; object-fit: cover;">
-        <div class="carousel-caption d-none d-md-block">
-          {% if request.user.is_staff %}
-            {% if not ad.is_approved %}
-              <form method="post" action="{% url 'main:approve_ad' ad.pk %}">
+        <a href="{% url 'catalogue:show_products' %}?product_brand={{ ad.brand_name }}">
+          <img src="{{ ad.image }}" class="d-block w-100" alt="{{ ad.brand_name }}" style="width: 700px; height: 500px; object-fit: cover;">
+          <div class="carousel-caption d-none d-md-block">
+            {% if request.user.is_staff %}
+              {% if not ad.is_approved %}
+                <form method="post" action="{% url 'main:approve_ad' ad.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-success">Approve</button>
+                </form>
+              {% endif %}
+              <form method="post" action="{% url 'main:delete_ad' ad.pk %}">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-success">Approve</button>
+                <button type="submit" class="btn btn-danger">Delete</button>
               </form>
+              <a href="javascript:void(0);" onclick="openEditAdModal('{{ ad.pk }}', '{{ ad.brand_name }}', '{{ ad.image }}');">
+                <button type="button" class="btn btn-warning">Edit</button>
+              </a>            
             {% endif %}
-            <form method="post" action="{% url 'main:delete_ad' ad.pk %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
-            <a href="javascript:void(0);" onclick="openEditAdModal('{{ ad.pk }}', '{{ ad.brand_name }}', '{{ ad.image }}');">
-              <button type="button" class="btn btn-warning">Edit</button>
-            </a>            
-          {% endif %}
-        </div>
+          </div>
+        </a>
       </div>
       {% endfor %}
     </div>
@@ -62,43 +64,52 @@
     <div class="row mt-4">
 
       <div class="col-md-3">
-        <div class="card" style="width: 100%;">
-          <div class="card-body">
-            <p class="card-text">CLEANSER</p>
+        <a href="{% url 'catalogue:show_products' %}?product_type=Cleanser" style="text-decoration: none; color: inherit;">
+          <div class="card" style="width: 100%; background-color: #ffc03e;">
+            <div class="card-body">
+              <p class="card-text">CLEANSER</p>
+            </div>
+            <img src="https://images.pexels.com/photos/3762460/pexels-photo-3762460.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load" class="card-img-bottom" style="height: 460px; object-fit:cover;">
           </div>
-          <img src="{% static 'images/klairs_ad.png' %}" class="card-img-bottom" alt="...">
-        </div>
+        </a>
       </div>
 
       <div class="col-md-3">
-        <div class="card" style="width: 100%;">
-          <div class="card-body">
-            <p class="card-text">TONER</p>
+        <a href="{% url 'catalogue:show_products' %}?product_type=Moisturizer" style="text-decoration: none; color: inherit;">
+          <div class="card" style="width: 100%; background-color: #9fc6ff;">
+            <div class="card-body">
+              <p class="card-text">MOISTURIZER</p>
+            </div>
+            <img src="https://images.pexels.com/photos/3762875/pexels-photo-3762875.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="card-img-bottom" style="height: 460px; object-fit:cover;">
           </div>
-          <img src="{% static 'images/klairs_ad.png' %}" class="card-img-bottom" alt="...">
-        </div>
+        </a>
       </div>
 
       <div class="col-md-3">
-        <div class="card" style="width: 100%;">
-          <div class="card-body">
-            <p class="card-text">SERUM</p>
+        <a href="{% url 'catalogue:show_products' %}?product_type=Serum" style="text-decoration: none; color: inherit;">
+          <div class="card" style="width: 100%; background-color: #ccc2fe;">
+            <div class="card-body">
+              <p class="card-text">SERUM</p>
+            </div>
+            <img src="https://images.pexels.com/photos/3762882/pexels-photo-3762882.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="card-img-bottom" style="height: 460px; object-fit:cover;">
           </div>
-          <img src="{% static 'images/klairs_ad.png' %}" class="card-img-bottom" alt="...">
-        </div>
+        </a>
       </div>
 
       <div class="col-md-3">
-        <div class="card" style="width: 100%;">
-          <div class="card-body">
-            <p class="card-text">ESSENCE</p>
+        <a href="{% url 'catalogue:show_products' %}?product_type=Essence" style="text-decoration: none; color: inherit;">
+          <div class="card" style="width: 100%;">
+            <div class="card-body">
+              <p class="card-text">ESSENCE</p>
+            </div>
+            <img src="https://images.pexels.com/photos/3762871/pexels-photo-3762871.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load" class="card-img-bottom" style="height: 460px; object-fit:cover;">
           </div>
-          <img src="{% static 'images/klairs_ad.png' %}" class="card-img-bottom" alt="...">
-        </div>
+        </a>
       </div>
     </div>
   </div>
 </section>
+
 
 <section class="on-budget">
   <a href="{% url 'events:event' %}" style="text-decoration: none; color: inherit;">
@@ -106,11 +117,11 @@
       <div class="row">
 
         <div class="col-md-6 p-0">
-          <img src="{% static 'images/klairs_ad.png' %}" alt="On Budget" style="width: 100%; height: 100%; object-fit: cover;">
+          <img src="https://mir-s3-cdn-cf.behance.net/project_modules/fs/c4b2ae88893103.5de4d4e1075f3.jpg" alt="On Budget" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
 
-        <div class="col-md-6 d-flex flex-column align-items-center justify-content-center" style="background-color: #6B94B3; color: #fff;">
-          <h1>ON A BUDGET?</h1>
+        <div class="col-md-6 d-flex flex-column align-items-center justify-content-center" style="background-color: #071a58; color:#99D3FF;">
+          <h1 class="text-white">ON A BUDGET?</h1>
           <h4>RSVP for promotion events near you!</h4>
         </div>
       </div>
@@ -125,114 +136,121 @@
     <div class="row mt-3">
 
       <div class="col-md-4">
-        <div class="card" style="width: 100%;">
-          <div class="card-body">
-            <p class="card-text">DARK CIRCLES</p>
+        <a href="{% url 'catalogue:show_products' %}?product_type=Eye+Treatment" style="text-decoration: none; color: inherit;">
+          <div class="card" style="width: 100%;background-color: #9fc6ff;">
+            <div class="card-body">
+              <p class="card-text">DARK CIRCLES</p>
+            </div>
+            <img src="https://img.freepik.com/free-photo/front-view-woman-with-brown-eyes_23-2149457546.jpg?t=st=1729968221~exp=1729971821~hmac=06a6b5b6fb500bc35312e0912ceca4a4a15269cad777c54d3cd1031ad70f8c90&w=2000" class="card-img-bottom">
           </div>
-          <img src="{% static 'images/klairs_ad.png' %}" class="card-img-bottom" alt="...">
-        </div>
+        </a>
       </div>
 
       <div class="col-md-4">
-        <div class="card" style="width: 100%;">
-          <div class="card-body">
-            <p class="card-text">ACNE</p>
+        <a href="{% url 'catalogue:show_products' %}?product_type=Other+Spot+Treatments" style="text-decoration: none; color: inherit;">
+          <div class="card" style="width: 100%; background-color: #ffc03e;">
+            <div class="card-body">
+              <p class="card-text">ACNE</p>
+            </div>
+            <img src="https://img.freepik.com/free-photo/confident-young-woman-with-acne-close-up_23-2148982535.jpg?t=st=1729968009~exp=1729971609~hmac=f12a56fbfd839e71dd9ebc2e0574d45d289eccb1ce065aca11f2b8c901eaf87a&w=2000" class="card-img-bottom">
           </div>
-          <img src="{% static 'images/klairs_ad.png' %}" class="card-img-bottom" alt="...">
-        </div>
+        </a>
       </div>
 
       <div class="col-md-4">
-        <div class="card" style="width: 100%;">
-          <div class="card-body">
-            <p class="card-text">DRY SKIN</p>
+        <a href="{% url 'catalogue:show_products' %}?product_type=Lip+Treatment" style="text-decoration: none; color: inherit;">
+          <div class="card" style="width: 100%; background-color: #ccc2fe;">
+            <div class="card-body">
+              <p class="card-text">DRY LIPS</p>
+            </div>
+            <img src="https://img.freepik.com/free-photo/portrait-white-woman-doing-her-daily-skincare-routine_53876-146164.jpg?t=st=1729968117~exp=1729971717~hmac=4e23700dc9af01cd120db3958dcd7c95486ac32e72a870c579783976a8a16293&w=2000" class="card-img-bottom">
           </div>
-          <img src="{% static 'images/klairs_ad.png' %}" class="card-img-bottom" alt="...">
-        </div>
+        </a>
       </div>
 
     </div>
   </div>
 </section>
 
+
 <section class="spa-day">
-  <div class="container-fluid">
-    <div class="row">
+  <a href="{% url 'catalogue:show_products' %}?product_type=Mask" style="text-decoration: none; color: inherit;">
+    <div class="container-fluid">
+      <div class="row">
 
-      <div class="col-md-6 d-flex flex-column align-items-center justify-content-center" style="background-color: #6B94B3; color: #fff;">
-        <h1>SPA DAY INCOMING?</h1>
-        <h4>Pick out a face mask for you and your girls to enjoy!</h4>
+        <div class="col-md-6 d-flex flex-column align-items-center justify-content-center" style="background-color: #071a58; color:#ccc2fe;">
+          <h1 class="text-white">SPA DAY INCOMING?</h1>
+          <h4>Pick out a face mask for you and your girls to enjoy!</h4>
+        </div>
+
+        <div class="col-md-6 p-0">
+          <img src="https://images.pexels.com/photos/8509197/pexels-photo-8509197.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="On Budget" style="width: 100%; height: 450px; object-fit: cover;">
+        </div>
+
       </div>
-
-      <div class="col-md-6 p-0">
-        <img src="{% static 'images/klairs_ad.png' %}" alt="On Budget" style="width: 100%; height: 100%; object-fit: cover;">
-      </div>
-
     </div>
-  </div>
+  </a>
 </section>
 
 <section class="stores-near text-center mt-5 mb-5">
-  <a href="{% url 'locator:locator' %}"  style="text-decoration: none; color: inherit;">
-    <h1 >BROWSE AT STORES NEAR YOU!</h1>
+  <a href="{% url 'locator:locator' %}" style="text-decoration: none; color: inherit;">
+    <h1>BROWSE AT STORES NEAR YOU!</h1>
   </a>
 
   <div id="multiItemCarousel" class="carousel slide mt-4" data-bs-ride="carousel">
-    <div class="carousel-inner">
-      <!-- First slide with 4 items -->
+    <div class="carousel-inner overflow-visible">
+
       <div class="carousel-item active">
         <div class="row">
-          <div class="col-md-3 px-2"> <!-- Added padding between columns -->
+          <div class="col-md-3 px-2">
             <a href="https://g.co/kgs/YFcqSM9" target="_blank">
-              <img src="{% static 'images/store1.jpg' %}" class="d-block w-100" alt="Store 1" style="height: 250px; object-fit: cover;">
+              <img src="{% static 'images/store1.jpg' %}" class="d-block w-100" alt="Store 1" style="height: 250px; object-fit: cover; border: 4px solid #9fc6ff;">
             </a>
           </div>
           <div class="col-md-3 px-2">
             <a href="https://g.co/kgs/w5Dc9pq" target="_blank">
-              <img src="{% static 'images/store2.jpg' %}" class="d-block w-100" alt="Store 2" style="height: 250px; object-fit: cover;">
+              <img src="{% static 'images/store2.jpg' %}" class="d-block w-100" alt="Store 2" style="height: 250px; object-fit: cover; border: 4px solid #ffc03e;">
             </a>
           </div>
           <div class="col-md-3 px-2">
             <a href="https://g.co/kgs/RqsESeV" target="_blank">
-              <img src="{% static 'images/store3.jpg' %}" class="d-block w-100" alt="Store 3" style="height: 250px; object-fit: cover;">
+              <img src="{% static 'images/store3.jpg' %}" class="d-block w-100" alt="Store 3" style="height: 250px; object-fit: cover; border: 4px solid #ccc2fe;">
             </a>
           </div>
           <div class="col-md-3 px-2">
             <a href="https://g.co/kgs/7284BCg" target="_blank">
-              <img src="{% static 'images/store4.jpg' %}" class="d-block w-100" alt="Store 4" style="height: 250px; object-fit: cover;">
+              <img src="{% static 'images/store4.jpg' %}" class="d-block w-100" alt="Store 4" style="height: 250px; object-fit: cover; border: 4px solid #9fc6ff;">
             </a>
           </div>
         </div>
       </div>
 
-      <!-- Second slide with 4 more items -->
       <div class="carousel-item">
         <div class="row">
           <div class="col-md-3 px-2">
             <a href="https://g.co/kgs/oUGcQyc" target="_blank">
-              <img src="{% static 'images/store5.jpg' %}" class="d-block w-100" alt="Store 5" style="height: 250px; object-fit: cover;">
+              <img src="{% static 'images/store5.jpg' %}" class="d-block w-100" alt="Store 5" style="height: 250px; object-fit: cover; border: 4px solid #ffc03e;">
             </a>
           </div>
           <div class="col-md-3 px-2">
             <a href="https://g.co/kgs/95Yqwnf" target="_blank">
-              <img src="{% static 'images/store6.jpg' %}" class="d-block w-100" alt="Store 6" style="height: 250px; object-fit: cover;">
+              <img src="{% static 'images/store6.jpg' %}" class="d-block w-100" alt="Store 6" style="height: 250px; object-fit: cover; border: 4px solid #ccc2fe;">
             </a>
           </div>
           <div class="col-md-3 px-2">
             <a href="https://g.co/kgs/32t4j6t" target="_blank">
-              <img src="{% static 'images/store7.jpg' %}" class="d-block w-100" alt="Store 7" style="height: 250px; object-fit: cover;">
+              <img src="{% static 'images/store7.jpg' %}" class="d-block w-100" alt="Store 7" style="height: 250px; object-fit: cover; border: 4px solid #9fc6ff;">
             </a>
           </div>
           <div class="col-md-3 px-2">
             <a href="https://g.co/kgs/w9STH52" target="_blank">
-              <img src="{% static 'images/store8.jpg' %}" class="d-block w-100" alt="Store 8" style="height: 250px; object-fit: cover;">
+              <img src="{% static 'images/store8.jpg' %}" class="d-block w-100" alt="Store 8" style="height: 250px; object-fit: cover; border: 4px solid #ffc03e;">
             </a>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Carousel controls -->
     <button class="carousel-control-prev" type="button" data-bs-target="#multiItemCarousel" data-bs-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Previous</span>
@@ -246,34 +264,36 @@
 
 
 <section class="sun-protect">
+  <a href="{% url 'catalogue:show_products' %}?product_type=Sun+Protection" style="text-decoration: none; color: inherit;">
     <div class="container-fluid">
       <div class="row">
 
         <div class="col-md-6 p-0">
-          <img src="{% static 'images/klairs_ad.png' %}" alt="On Budget" style="width: 100%; height: 100%; object-fit: cover;">
+          <img src="https://images.pexels.com/photos/5202466/pexels-photo-5202466.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="On Budget" style="width: 100%; height: 400x; object-fit: cover;">
         </div>
 
-        <div class="col-md-6 d-flex flex-column align-items-center justify-content-center" style="background-color: #6B94B3; color: #fff;">
-          <h1>PROTECT YOUR SKIN</h1>
+        <div class="col-md-6 d-flex flex-column align-items-center justify-content-center" style="background-color: #071a58; color:#ffc03e;">
+          <h1 class="text-white">PROTECT YOUR SKIN</h1>
           <h4>Browse our top picks for sun protection!</h4>
         </div>
       </div>
     </div>
+  </a>
 </section>
 
-<section class="ad-submission-box mt-4 mb-4">
-<div class="card text-center mx-auto" style="background-color: #D9D9D9; color: #6B94B3; width: 726px; height: 200px; border-radius: 20px;"">
+<section class="ad-submission-box mt-5 mb-5">
+<div class="card text-center mx-auto" style="background-color: #071a58; color: #e1dcca; width: 726px; height: 300px; border-radius: 20px;"">
   <div class="card-body d-flex flex-column justify-content-center align-items-center">
-    <h2 class="card-title">PARTNER UP WITH US!</h2>
+    <h2 class="card-title text-white">PARTNER UP WITH US!</h2>
     <p class="card-text">Want your brand to be showcased on our website?</p>
     <a href="{% url 'main:create_ad' %}">
-      <button type="button" class="btn mt-2" style="background-color: #99D3FF; color: #FFFFFF;">SUBMIT YOUR ADS HERE!</button>
+      <button type="button" class="btn mt-2" style="background-color: #99D3FF; color: #071a58;">SUBMIT YOUR ADS HERE!</button>
     </a>
   </div>
 </div>
 </section>
 
-<!-- Edit Ad Modal -->
+
 <div class="modal fade" id="editAdModal" tabindex="-1" aria-labelledby="editAdModalLabel" aria-hidden="true">
   <div class="modal-dialog">
       <div class="modal-content">
@@ -303,24 +323,20 @@
 <script>
   function openEditAdModal(adId, brandName, imageUrl) {
     
-    // Set form action and populate form fields
     document.getElementById('editAdForm').action = `/edit-ad/${adId}`;
     document.getElementById('brand_name').value = brandName || ''; 
     document.getElementById('image').value = imageUrl || '';
 
-    // Show modal
     $('#editAdModal').modal('show');
   }
 
-  // Handle AJAX form submission
   document.getElementById('editAdForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent standard form submission
+    event.preventDefault(); 
     
     let formData = new FormData(this);
     let formDataObj = {};
     let csrftoken = "";
 
-    // Add each pair to the object
     for (let [key, value] of formData.entries()) {
       if (key === "csrfmiddlewaretoken") {
         csrftoken = value;
@@ -333,16 +349,16 @@
       method: 'POST',
       body: new URLSearchParams(formDataObj),
       headers: {
-        'X-CSRFToken': csrftoken, // Add CSRF token here
-        'X-Requested-With': 'XMLHttpRequest', // AJAX request header
+        'X-CSRFToken': csrftoken, 
+        'X-Requested-With': 'XMLHttpRequest', 
       },
     })
     .then(response => {
       if (response?.ok) {
         $('#editAdModal').modal('hide');
-        location.reload(); // Reload page to reflect changes
+        location.reload(); 
       } else {
-        alert(response?.message || 'Error saving changes'); // Show error message from response
+        alert(response?.message || 'Error saving changes'); 
       }
     })
     .catch(error => {
@@ -352,4 +368,5 @@
   });
 </script>
 
+{% include 'footer.html' %}
 {% endblock content %}

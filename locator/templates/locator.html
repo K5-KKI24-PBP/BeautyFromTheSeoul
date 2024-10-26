@@ -5,7 +5,7 @@
 
 <div class="container">
     <div class="text-center">
-        <h1 class="display-5 fw-bold text-primary mb-3">Store Locator</h1>
+        <h1 class="display-5 mt-5">Store Locator</h1>
         <p class="lead text-muted mb-4">Find a skincare store near you!</p>
     </div>
     
@@ -30,9 +30,9 @@
     </div>
     {% endif %}
 
-    <div class="row mt-5 mb-4">
+    <div class="row mt-4 mb-5">
         <div class="col-md-4 offset-md-4">
-            <label for="districtFilter" class="form-label fw-semibold">Filter by District:</label>
+            <label for="districtFilter" class="form-label fw-semibold">Which district is closest to you?</label>
             <select id="districtFilter" class="form-select">
                 <option value="">All Districts</option>
                 {% for district in districts %}
@@ -114,4 +114,5 @@
     });
 </script>
 
+{% include 'footer.html' %}
 {% endblock content %}
