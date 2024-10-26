@@ -23,14 +23,15 @@
                         <h6>Reviews:</h6>
                         <div id="reviews-{{ forloop.counter }}">
                             {% for review in product.reviews.all %}
-                                <p>
+                                <p id="review-{{ review.id }}">
                                     <strong>{{ review.user.username }}:</strong> 
                                     {{ review.rating }} stars - "{{ review.comment }}"
                                     {% if user.is_superuser %}
-                                        <form method="post" action="{% url 'catalogue:delete_review' review.id %}" style="display:inline;">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                        </form>
+                                        <button type="button" class="btn btn-danger btn-sm delete-review-btn" 
+                                                data-review-id="{{ review.id }}" 
+                                                data-product-id="{{ forloop.counter }}">
+                                            Delete
+                                        </button>
                                     {% endif %}
                                 </p>
                             {% empty %}
@@ -38,27 +39,32 @@
                             {% endfor %}
                         </div>
 
-                        <!-- Review Form -->
-                        {% if user.is_authenticated %}
-                            {% if not product.user_reviewed %}
-                                <form method="post" action="{% url 'catalogue:add_review' product.product_id %}" id="reviewForm{{ forloop.counter }}">
-                                    {% csrf_token %}
-                                    <div class="form-group">
-                                        <label for="rating">Rating:</label>
-                                        <input type="number" name="rating" min="1" max="5" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="comment">Comment:</label>
-                                        <textarea name="comment" rows="3" required></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Submit Review</button>
-                                </form>
+                        <!-- AJAX Review Form -->
+                        <div id="review-form-container-{{ forloop.counter }}">
+                            {% if user.is_authenticated %}
+                                {% if not product.user_reviewed %}
+                                    <form method="post" action="{% url 'catalogue:add_review' product.product_id %}" id="reviewForm{{ forloop.counter }}" data-product-id="{{ product.product_id }}">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <label for="rating">Rating:</label>
+                                            <input type="number" name="rating" min="1" max="5" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="comment">Comment:</label>
+                                            <textarea name="comment" rows="3" required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                                    </form>
+                                {% else %}
+                                    <p id="no-review-message-{{ forloop.counter }}">You have already reviewed this product.</p>
+                                {% endif %}
                             {% else %}
-                                <p>You have already reviewed this product.</p>
+                                <p><a href="{% url 'authentication:login' %}">Log in</a> to leave a review.</p>
                             {% endif %}
-                        {% else %}
-                            <p><a href="{% url 'authentication:login' %}">Log in</a> to leave a review.</p>
-                        {% endif %}
+                        </div>
+
+                        <!-- Review Confirmation Message -->
+                        <p id="review-confirm-message-{{ forloop.counter }}" style="display: none;">Thank you for your review!</p>
                     </div>
                 </div>
             </div>
