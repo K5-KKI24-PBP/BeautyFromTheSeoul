@@ -1,0 +1,73 @@
+<div class="card text-center">
+    <div class="product-image-placeholder" style="background-color: #f2f2f2; width: 100%; height: 250px;">
+        <img src="{{ product.image }}" alt="{{ product.product_name }}" class="img-fluid" style="object-fit: contain; width: 100%; height: 100%;">
+    </div>
+    <div class="card-body">
+        <h5 class="card-title" style="text-align: left;">{{ product.product_name }}</h5>
+        <p class="card-text" style="text-align: left;">{{ product.product_brand }}</p>
+        <p class="card-text" style="text-align: left;">{{ product.product_type }}</p>
+
+        <!-- Button to trigger modal -->
+        <div class="d-flex justify-content-between">
+            {% if user.is_superuser %}
+            <form method="POST" action="{% url 'catalogue:delete_product' product.product_id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+            {% endif %}
+            <div style="text-align: right; margin-top: -10px;">
+                <button class="btn btn-secondary" data-toggle="modal" data-target="#productModal{{ forloop.counter }}">View</button>
+            </div>
+
+           <!-- Favorites Button -->
+            <div style="text-align: right; margin-top: -10px;">
+                <button type="button" 
+                    id="favoriteButton{{ product.product_id }}" 
+                    class="btn {% if product.product_id in favorite_product_ids %}bi-heart-fill favorite-added{% else %}bi-heart{% endif %}"
+                    style="background-color: transparent; border: none; color: #f2446a; font-size: 1.5rem;"
+                    onclick="toggleFavorite('{{ product.product_id }}');"
+                    onmouseover="this.classList.add('bi-heart-fill');"
+                    onmouseout="if(!this.classList.contains('favorite-added')) this.classList.remove('bi-heart-fill');">
+                </button>
+            </div>
+
+            <script>
+                const url = `/favorites/add/${productId}/`;
+
+                function toggleFavorite(productId) {
+                    const button = document.getElementById(`favoriteButton${productId}`);
+                    const csrfToken = '{{ csrf_token }}';
+
+                    // Construct the URL dynamically using productId
+                    const url = `/favorites/add/${productId}/`;
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ product_id: productId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.added) {
+                            // Update to filled heart
+                            button.classList.add('bi-heart-fill', 'favorite-added');
+                            button.classList.remove('bi-heart');
+                            alert(data.message);
+                        } else if (data.removed) {
+                            // Revert to outlined heart
+                            button.classList.remove('bi-heart-fill', 'favorite-added');
+                            button.classList.add('bi-heart');
+                            alert(data.message);
+                        } else if (data.error) {
+                            alert(data.error);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+            </script>
+        </div>
+    </div>
+</div>

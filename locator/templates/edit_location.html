@@ -1,22 +1,37 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
 {% block content %}
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card" style="width: 500px;">
+        <div class="card-body">
+            <h1 class="card-title">Edit Location</h1>
 
-<h1>Edit Location</h1>
-
-<form method="POST">
-    {% csrf_token %}
-    <table>
-        {{ form.as_table }}
-        <tr>
-            <td></td>
-            <td>
-                <input type="submit" value="Edit"/>
-            </td>
-        </tr>
-    </table>
-</form>
-
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.store_name.label_tag }}
+                    {{ form.store_name }}
+                </div>
+                <div class="mb-3">
+                    {{ form.street_name.label_tag }}
+                    {{ form.street_name }}
+                </div>
+                <div class="mb-3">
+                    {{ form.district.label_tag }}
+                    {{ form.district }}
+                </div>
+                <div class="mb-3">
+                    {{ form.gmaps_link.label_tag }}
+                    {{ form.gmaps_link }}
+                </div>
+                <div class="mb-3">
+                    {{ form.store_image.label_tag }}
+                    {{ form.store_image }}
+                </div>
+                <button type="submit" class="btn btn-primary">Edit</button>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from catalogue.forms import AddProductForm, ProductFilterForm, ReviewForm
 from catalogue.models import Products, Review
+from favorites.models import Favorite
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse, JsonResponse
 from django.urls import reverse
 from functools import wraps
@@ -10,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 from django.contrib import messages
+from django.template.loader import render_to_string
 
 # Create your views here.
 def superuser_required(view_func):
@@ -63,6 +65,11 @@ def show_products(request):
     products = Products.objects.all()
     product_types = Products.objects.values_list('product_type', flat=True).distinct()
     product_brands = Products.objects.values_list('product_brand', flat=True).distinct()
+    
+    favorite_product_ids = (
+        list(Favorite.objects.filter(user=request.user).values_list('skincare_product__product_id', flat=True))
+        if request.user.is_authenticated else []
+    )
 
     form = ProductFilterForm(request.GET)
     products = filter_products(request, products)
@@ -87,6 +94,7 @@ def show_products(request):
         'user_reviews': user_reviews,
         'product_types': product_types,
         'product_brands': product_brands,
+        'favorite_product_ids': favorite_product_ids,
     }
     
     return render(request, "catalogue.html", context)
@@ -104,6 +112,15 @@ def filter_products(request, products):
         products = products.filter(product_brand__icontains=product_brand)
 
     return products
+
+def filter_products_ajax(request):
+    products = Products.objects.all()  # Get all products initially
+    products = filter_products(request, products)  # Apply the filtering criteria
+
+    # Render the filtered products list to HTML
+    html = render_to_string('product_list.html', {'products': products}, request=request)
+    return JsonResponse({'html': html})
+
 # Editing product
 @superuser_required
 @login_required
@@ -135,29 +152,37 @@ def delete_product(request, product_id):
 
 @csrf_exempt
 @require_POST
+@superuser_required
 def add_product_entry(request):
-    image= strip_tags(request.POST.get("image"))
+    image = strip_tags(request.POST.get("image"))
     product_name = strip_tags(request.POST.get("product_name"))
     product_brand = strip_tags(request.POST.get("product_brand"))
-    product_type  = strip_tags(request.POST.get("product_type"))
+    product_type = strip_tags(request.POST.get("product_type"))
     product_description = strip_tags(request.POST.get("product_description"))
     price = strip_tags(request.POST.get("price"))
     
-
     if not all([image, product_name, product_brand, product_type, product_description, price]):
         return JsonResponse({"error": "Fill in all required fields!"}, status=400)
     
     try:
         new_product = Products(
-            product_name=product_name, product_brand=product_brand,
-            product_type=product_type, product_description=product_description,
-            price=price, image=image,
+            product_name=product_name,
+            product_brand=product_brand,
+            product_type=product_type,
+            product_description=product_description,
+            price=price,
+            image=image,
         )
         new_product.save()
-        return redirect(reverse('catalogue:show_products'))
+
+        # After saving, render the updated product list
+        products = Products.objects.all()  # Get updated product list
+        html = render_to_string('product_list.html', {'products': products}, request=request)
+        
+        return JsonResponse({'html': html})
+
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
-
 def get_product(request):
     data = Products.objects.all()
     return HttpResponse(serializers.serialize('json', data), content_type='application/json')

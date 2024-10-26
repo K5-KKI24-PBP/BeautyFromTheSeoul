@@ -4,31 +4,43 @@
 {% include 'navbar.html' %}
 
 <div class="container">
+    <div class="text-center">
+        <h1 class="display-5 fw-bold text-primary mb-3">Store Locator</h1>
+        <p class="lead text-muted mb-4">Find a skincare store near you!</p>
+    </div>
+    
     <div class="row justify-content-center">
-        <h1>Store Locator</h1>
-        <p>Find a skincare store near you!</p>
-        <div class="col-auto">
-            <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1eUKaCIKE-XTVcOgbm4WPCkHSnibBGQ4&ehbc=2E312F&noprof=1" width="640" height="480" frameborder="0" style="border:0" allowfullscreen></iframe>
+        <div class="col-12 col-md-8 col-lg-6">
+            <iframe 
+                src="https://www.google.com/maps/d/u/0/embed?mid=1eUKaCIKE-XTVcOgbm4WPCkHSnibBGQ4&ehbc=2E312F&noprof=1" 
+                width="100%" 
+                height="400" 
+                frameborder="0" 
+                style="border:0; border-radius: 8px;" 
+                allowfullscreen>
+            </iframe>
         </div>
     </div>
-    <div>
-        {% if request.user.is_staff %}
-        <a href="{% url 'locator:location_entry' %}">
-            <button type="button" class="btn mt-2" style="background-color: #99D3FF;">Add New Store</button>
+
+    {% if request.user.is_staff %}
+    <div class="text-center mt-4">
+        <a href="{% url 'locator:location_entry' %}" class="btn btn-info text-white">
+            Add New Store
         </a>
-        {% endif %}
     </div>
+    {% endif %}
 
-    <div class="col-auto mb-3">
-        <label for="districtFilter" class="form-label">Filter by District:</label>
-        <select id="districtFilter" class="form-select">
-            <option value="">All Districts</option>
-            {% for district in districts %}
-            <option value="{{ district }}">{{ district }}</option>
-            {% endfor %}
-        </select>
+    <div class="row mt-5 mb-4">
+        <div class="col-md-4 offset-md-4">
+            <label for="districtFilter" class="form-label fw-semibold">Filter by District:</label>
+            <select id="districtFilter" class="form-select">
+                <option value="">All Districts</option>
+                {% for district in districts %}
+                <option value="{{ district }}">{{ district }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
-
 
     <div class="row d-flex align-items-stretch mb-4 mt-4" id="location_cards">
         {% for location in locations %}
@@ -40,7 +52,7 @@
                     <p class="card-text">{{ location.street_name }}, {{ location.district }}</p>
                     <a href="{{ location.gmaps_link }}" class="btn btn-primary mt-auto">How Do I Get There?</a>
                     {% if request.user.is_staff %}
-                        <form method="post" action="{% url 'locator:delete_location' location.pk %}" style="display:inline;">
+                        <form method="post" action="{% url 'locator:delete_location' location.pk %}" style="display:inline;" onsubmit="return confirmDelete();">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger mt-2">Delete</button>
                         </form>
@@ -53,11 +65,16 @@
         </div>
         {% endfor %}
     </div>
-
 </div>
 
 <script>
-    
+    function confirmDelete() {
+        return confirm("Are you sure you want to delete this location?");
+    }
+
+    // Get data is_staff from request
+    const isStaff = {{ request.user.is_staff|yesno:"true,false" }};
+
     document.getElementById('districtFilter').addEventListener('change', function() {
         let district = this.value;
 
@@ -78,6 +95,15 @@
                                     <h5 class="card-title">${fields.store_name}</h5>
                                     <p class="card-text">${fields.street_name}, ${fields.district}</p>
                                     <a href="${fields.gmaps_link}" class="btn btn-primary mt-auto">How Do I Get There?</a>
+                                    ${isStaff ? `
+                                        <form method="post" action="/store-locator/delete/${item.pk}" style="display:inline;" onsubmit="return confirmDelete();">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger mt-2">Delete</button>
+                                        </form>
+                                        <a href="/store-locator/edit-location/${item.pk}">
+                                            <button type="button" class="btn btn-warning mt-2">Edit</button>
+                                        </a>
+                                    ` : ''}
                                 </div>
                             </div>
                         </div>
@@ -87,8 +113,5 @@
             .catch(error => console.error('Error:', error));
     });
 </script>
-
-    
-
 
 {% endblock content %}

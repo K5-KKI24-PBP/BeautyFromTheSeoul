@@ -3,10 +3,11 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from authentication.forms import RegistrationForm
 from django.contrib.auth.forms import AuthenticationForm
+from authentication.forms import CustomAuthenticationForm
 
 def login_user(request):
     if request.method == "POST":
-        form= AuthenticationForm(request, request.POST)
+        form= CustomAuthenticationForm(request, request.POST)
         if form.is_valid():
             username = request.POST.get("username")
             password = request.POST.get("password")
@@ -22,7 +23,7 @@ def login_user(request):
         else:
             messages.info(request, "Incorrect username or password. Please try again.")
     else:
-        form = AuthenticationForm()
+        form = CustomAuthenticationForm()
     context = {'form': form}
 
     return render(request, 'login.html', context)

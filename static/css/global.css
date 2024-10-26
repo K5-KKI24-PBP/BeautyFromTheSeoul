@@ -1,12 +1,76 @@
-body {
-    font-family: 'Kotta One', serif;
+
+@font-face {
+    font-family: 'Laurasia';
+    src: url('/static/fonts/Laurasia.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
-.zoom-effect {
-    transition: transform 0.3s ease; 
+@font-face {
+    font-family: 'TT';
+    src: url('/static/fonts/TTinterphases.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
-  
-.zoom-effect:hover {
-    transform: scale(1.1); 
+
+
+body {
+    background-color: #fcfaf3;
+    color: #071a58;
+    font-family: 'TT', sans-serif;
 }
+
+h1, .card-title {
+    color: #071a58;
+    font-family: 'Laurasia';
+}
+
+.text-primary {
+    color: #071a58 !important;
+}
+
+.lead {
+    color: #9fc6ff;
+}
+
+.btn-primary {
+    background-color: #9fc6ff;
+    border: none;
+    color: white;
+}
+
+.btn-info {
+    background-color: #071a58;
+    border: none;
+}
+
+.btn-warning {
+    background-color: #ffc03e;
+    color: white;
+    border: none;
+}
+
+.btn-danger {
+    background-color: #ccc2fe;
+    color: white;
+    border: none;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #e1dcca;
+    border-radius: 8px;
+}
+
+.card img {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.modal-header, .modal-footer {
+    background-color: #9fc6ff;
+    color: white;
+}
+
 
