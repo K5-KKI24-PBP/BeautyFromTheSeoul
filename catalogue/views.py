@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from catalogue.forms import AddProductForm, ProductFilterForm
-from catalogue.models import Products
+from catalogue.forms import AddProductForm, ProductFilterForm, ReviewForm
+from catalogue.models import Products, Review
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse, JsonResponse
 from django.urls import reverse
 from functools import wraps
@@ -103,3 +103,35 @@ def get_product(request):
     data = Products.objects.all()
     return HttpResponse(serializers.serialize('json', data), content_type='application/json')
     
+@login_required
+@require_POST
+def add_review(request, product_id):
+    product = Products.objects.get(pk=product_id)
+    form = ReviewForm(request.POST)
+
+    if form.is_valid():
+        review, created = Review.objects.get_or_create(
+            product=product,
+            user=request.user,
+            defaults={'rating': form.cleaned_data['rating'], 'comment': form.cleaned_data['comment']}
+        )
+        if not created:  # If review exists, update it
+            review.rating = form.cleaned_data['rating']
+            review.comment = form.cleaned_data['comment']
+            review.save()
+        return redirect(reverse('catalogue:show_products'))
+    else:
+        return JsonResponse({"error": "Invalid data provided."}, status=400)
+    
+@superuser_required
+@login_required
+@require_POST
+def delete_review(request, review_id):
+    try:
+        review = Review.objects.get(pk=review_id)
+        review.delete()
+        return redirect(reverse('catalogue:show_products'))
+    except Review.DoesNotExist:
+        return JsonResponse({"error": "Review not found."}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)

@@ -111,8 +111,48 @@
                             </div>
                             <div class="col-md-6">
                                 <h5>Brand: {{ product.product_brand }}</h5>
-                                <p style="text-align: justify;">{{ product.price }}</p>
-                                <p style="text-align: justify;">{{ product.product_description }}</p>
+                                <p>Price: {{ product.price }}</p>
+                                <p>{{ product.product_description }}</p>
+                                <h5>Average Rating: {{ product.average_rating|default:"No ratings yet" }}</h5>
+                                
+                                <!-- Review Section -->
+                                <hr>
+                                <h6>Reviews:</h6>
+                                <div id="reviews-{{ forloop.counter }}">
+                                    {% for review in product.reviews.all %}
+                                        <p>
+                                            <strong>{{ review.user.username }}:</strong> 
+                                            {{ review.rating }} stars - "{{ review.comment }}"
+                                            {% if user.is_superuser %}
+                                                <!-- Delete button for admins -->
+                                                <form method="post" action="{% url 'catalogue:delete_review' review.id %}" style="display:inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                </form>
+                                            {% endif %}
+                                        </p>
+                                    {% empty %}
+                                        <p>No reviews yet.</p>
+                                    {% endfor %}
+                                </div>
+
+                                <!-- Review Form -->
+                                {% if user.is_authenticated %}
+                                    <form method="post" action="{% url 'catalogue:add_review' product.product_id %}" id="reviewForm{{ forloop.counter }}">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <label for="rating">Rating:</label>
+                                            <input type="number" name="rating" min="1" max="5" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="comment">Comment:</label>
+                                            <textarea name="comment" rows="3" required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                                    </form>
+                                {% else %}
+                                    <p><a href="{% url 'authentication:login' %}">Log in</a> to leave a review.</p>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -155,10 +195,6 @@
 {% endblock content %}
 
 {% block scripts %}
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     $(document).ready(function() {
@@ -168,6 +204,26 @@
             $(targetModal).modal('show');
         });
     });
+
+    $(document).ready(function() {
+    $("form[id^='reviewForm']").on('submit', function(event) {
+        event.preventDefault();
+        const form = $(this);
+        const url = form.attr("action");
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(),
+            success: function(response) {
+                alert("Review submitted!");
+                location.reload();  // Reload to show the new review
+            },
+            error: function(xhr) {
+                alert("Failed to submit review: " + xhr.responseJSON.error);
+            }
+        });
+    });
+});
 </script>
 
 {% endblock scripts %}
