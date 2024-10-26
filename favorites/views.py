@@ -9,8 +9,32 @@ def show_favorites(request):
     if not request.user.is_authenticated:
         return render(request, 'not_logged_in.html')  # Render a custom template
 
-    favorites = Favorite.objects.filter(user=request.user).select_related('skincare_product').order_by('-created_at')
-    return render(request, 'favorites.html', {'favorites': favorites})
+    favorites = Favorite.objects.filter(user=request.user).select_related('skincare_product')
+
+    # Collect unique product types from the favorites list
+    product_types = favorites.values_list('skincare_product__product_type', flat=True).distinct()
+    product_types = sorted(set(product_types))  # Sort and remove duplicates
+
+    # Get sorting option
+    sort_option = request.GET.get('sort', 'recent')
+    if sort_option == '1':
+        favorites = favorites.order_by('created_at')  # Oldest first
+    else:
+        favorites = favorites.order_by('-created_at')  # Most recent first
+
+    # Filtering logic for skincare type
+    product_type = request.GET.get('product_type')
+    if product_type:
+        favorites = favorites.filter(skincare_product__product_type__icontains=product_type)
+
+    context = {
+        'favorites': favorites,
+        'product_types': product_types,
+        'selected_product_type': product_type  # To retain the selected filter
+    }
+
+    return render(request, 'favorites.html', context)
+
 
 def add_favorites(request, product_id):
     if not request.user.is_authenticated:
@@ -22,26 +46,26 @@ def add_favorites(request, product_id):
 
     if created:
         # Added to favorites
-        return JsonResponse({'added': True, 'message': f' The product has been added to your favorites!'})
+        return JsonResponse({'added': True})
     else:
         # Already a favorite, so remove it
         favorite.delete()
-        return JsonResponse({'removed': True, 'message': f'Your liked product has been removed from your favorites.'})
+        return JsonResponse({'removed': True})
 
 def remove_favorites(request, product_id):
     if not request.user.is_authenticated:
-        JsonResponse({'success': False, 'message': 'You need to be logged in to remove favorites.'}, status=401)
+        return JsonResponse({'success': False, 'message': 'You need to be logged in to remove favorites.'}, status=401)
     
     product = get_object_or_404(Products, product_id=product_id)
     favorite = Favorite.objects.filter(user=request.user, skincare_product=product)
 
     if favorite.exists():
         favorite.delete()
-        messages.success(request, f'{product.product_name} has been removed from your favorites.')
+        return JsonResponse({'success': True, 'message': 'Your favorite product has been removed from your favorites.'})
     else:
-        messages.error(request, f'{product.product_name} is not in your favorites.')
+        return JsonResponse({'success': False, 'message': 'The following product is not in your favorites.'})
 
-    return redirect('favorites:favorites')
+
 
 
 
