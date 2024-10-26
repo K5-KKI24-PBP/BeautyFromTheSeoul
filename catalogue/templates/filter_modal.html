@@ -1,0 +1,33 @@
+<div id="filterModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filterModalLabel">Filter Products</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h6>Select Brand:</h6>
+                <select id="brandSelect" class="form-control">
+                    <option value="">-- Select Brand --</option>
+                    {% for product_brands in product_brands %}
+                        <option value="{{ product_brands }}">{{ product_brands }}</option>
+                    {% endfor %}
+                </select>
+                <hr>
+                <h6>Select Product Type:</h6>
+                <select id="typeSelect" class="form-control">
+                    <option value="">-- Select Product Type --</option>
+                    {% for product_type in product_types %}
+                        <option value="{{ product_type }}">{{ product_type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="applyFilter()">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
