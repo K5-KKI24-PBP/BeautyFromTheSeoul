@@ -14,13 +14,13 @@
     
     <div class="carousel-inner">
       <a href="{% url 'catalogue:show_products' %}">
-        <div class="carousel-item active">
+        <div class="carousel-item ad-carousel-item active">
           <img src="{% static 'images/landing.png' %}" class="d-block w-100" alt="Default Ad" style="width: 700px; height: 500px; object-fit: cover;">
         </div>
       </a>
 
       {% for ad in ads %}
-      <div class="carousel-item">
+      <div class="carousel-item ad-carousel-item">
         <a href="{% url 'catalogue:show_products' %}?product_brand={{ ad.brand_name }}">
           <img src="{{ ad.image }}" class="d-block w-100" alt="{{ ad.brand_name }}" style="width: 700px; height: 500px; object-fit: cover;">
           <div class="carousel-caption d-none d-md-block">
@@ -194,7 +194,9 @@
 
 <section class="stores-near text-center mt-5 mb-5">
   <a href="{% url 'locator:locator' %}" style="text-decoration: none; color: inherit;">
-    <h1>BROWSE AT STORES NEAR YOU!</h1>
+    <div class="scale-on-hover">
+      <h1>BROWSE AT STORES NEAR YOU!</h1>
+    </div>
   </a>
 
   <div id="multiItemCarousel" class="carousel slide mt-4" data-bs-ride="carousel">
@@ -287,7 +289,7 @@
     <h2 class="card-title text-white">PARTNER UP WITH US!</h2>
     <p class="card-text">Want your brand to be showcased on our website?</p>
     <a href="{% url 'main:create_ad' %}">
-      <button type="button" class="btn mt-2" style="background-color: #99D3FF; color: #071a58;">SUBMIT YOUR ADS HERE!</button>
+      <button type="button" class="btn btn-danger mt-2">SUBMIT YOUR ADS HERE!</button>
     </a>
   </div>
 </div>
