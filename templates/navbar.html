@@ -36,6 +36,11 @@
         <li class="nav-item">
           <a class="nav-link {% if request.resolver_match.url_name == 'locator' %}active{% endif %}" aria-current="page" href="{% url 'locator:locator' %}">Store Locator</a>
         </li>
+
+        <!-- Favorites -->
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'favorites' %}active{% endif %}" aria-current="page" href="{% url 'favorites:favorites' %}">Favorites</a>
+        </li>
       </ul>
       
       <div class="d-flex">
