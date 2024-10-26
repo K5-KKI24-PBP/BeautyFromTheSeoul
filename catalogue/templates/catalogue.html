@@ -86,6 +86,33 @@
                       <div style="text-align: right; margin-top: -10px;">
                           <button class="btn btn-secondary" data-toggle="modal" data-target="#productModal{{ forloop.counter }}">View</button>
                       </div>
+                      <!-- Favorites Button -->
+                      <style>
+                        .heart-button {
+                            background-color: transparent;
+                            border: none;
+                            color: #f2446a;
+                            font-size: 1.5rem;
+                            cursor: pointer;
+                            transition: color 0.3s; /* Optional smooth color transition */
+                        }
+                        .heart-button:hover {
+                            color: #ff7b91; /* Change to desired hover color */
+                        }
+                        </style>
+                        <div style="text-align: right; margin-top: -10px;">
+                            <form method="POST" action="{% url 'favorites:add_favorites' product.product_id %}">
+                                {% csrf_token %}
+                                <button type="submit" 
+                                    id="favoriteButton" 
+                                    class="btn bi-heart" 
+                                    style="background-color: transparent; border: none; color: #f2446a; font-size: 1.5rem;"
+                                    onclick="toggleFavorite(this);"
+                                    onmouseover="this.classList.add('bi-heart-fill');"
+                                    onmouseout="if(!this.classList.contains('favorite-added')) this.classList.remove('bi-heart-fill');">
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
