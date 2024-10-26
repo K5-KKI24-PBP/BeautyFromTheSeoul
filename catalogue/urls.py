@@ -12,4 +12,5 @@ urlpatterns = [
     path('get_product', get_product, name='get_product'),
     path('add_review/<uuid:product_id>/', add_review, name='add_review'),
     path('delete_review/<int:review_id>/', delete_review, name='delete_review'),
+    path('filter/', filter_products, name='filter_products'),
 ]
