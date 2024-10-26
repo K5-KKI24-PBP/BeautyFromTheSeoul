@@ -9,15 +9,8 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ms-auto me-auto mb-2 mb-lg-0 align-items-center">
         
-        <!-- Products Dropdown -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Products
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'catalogue:show_products' %}">By Types</a></li>
-            <li><a class="dropdown-item" href="{% url 'catalogue:show_products' %}">By Brands</a></li>
-          </ul>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'show_products' %}active{% endif %}" aria-current="page" href="{% url 'catalogue:show_products' %}">Products</a>
         </li>
         
         <!-- Promotion Events -->
@@ -35,11 +28,6 @@
         <!-- Store Locator -->
         <li class="nav-item">
           <a class="nav-link {% if request.resolver_match.url_name == 'locator' %}active{% endif %}" aria-current="page" href="{% url 'locator:locator' %}">Store Locator</a>
-        </li>
-
-        <!-- Favorites -->
-        <li class="nav-item">
-          <a class="nav-link {% if request.resolver_match.url_name == 'favorites' %}active{% endif %}" aria-current="page" href="{% url 'favorites:favorites' %}">Favorites</a>
         </li>
       </ul>
       

@@ -28,10 +28,9 @@ def add_favorites(request, product_id):
         favorite.delete()
         return JsonResponse({'removed': True, 'message': f'Your liked product has been removed from your favorites.'})
 
-@login_required
 def remove_favorites(request, product_id):
     if not request.user.is_authenticated:
-        return redirect('authentication:login')
+        JsonResponse({'success': False, 'message': 'You need to be logged in to remove favorites.'}, status=401)
     
     product = get_object_or_404(Products, product_id=product_id)
     favorite = Favorite.objects.filter(user=request.user, skincare_product=product)
