@@ -21,32 +21,62 @@ def superuser_required(view_func):
             return HttpResponseForbidden("Access denied. You must be a superuser to access this page.")
     return _wrapped_view
 
+# def show_products(request):
+#     products = Products.objects.all()
+#     product_types = Products.objects.values_list('product_type', flat=True).distinct()
+#     product_brands = Products.objects.values_list('product_brand', flat=True).distinct()
+#     form = ProductFilterForm(request.GET)
+    
+#     product_type = request.GET.get('product_type')
+#     product_brand = request.GET.get('brand')
+
+#     print(f"Product Name: {product_type}, Product Brand: {product_brand}")
+
+#     if product_type or product_brand:
+#         if product_type:  
+#             products = products.filter(product_type__icontains=product_type)
+#         if product_brand:
+#             products = products.filter(product_brand__icontains=product_brand)
+
+#     user_reviews = {}
+#     if request.user.is_authenticated:
+#         user_reviews = {
+#             review.product_id: review 
+#             for review in Review.objects.filter(
+#                 user=request.user, 
+#                 product_id__in=[product.product_id for product in products]
+#                 )
+#             }
+#     for product in products:
+#         product.user_reviewed = product.product_id in user_reviews
+
+#     context = {
+#         'products': products,
+#         'form': form,
+#         'product_form': AddProductForm(),
+#         'user_reviews': user_reviews,
+#         'product_types': product_types,  
+#         'product_brands': product_brands, 
+#     }
+#     return render(request, "catalogue.html", context)
 def show_products(request):
     products = Products.objects.all()
     product_types = Products.objects.values_list('product_type', flat=True).distinct()
     product_brands = Products.objects.values_list('product_brand', flat=True).distinct()
+
     form = ProductFilterForm(request.GET)
-    
-    product_type = request.GET.get('product_type')
-    product_brand = request.GET.get('brand')
-
-    print(f"Product Name: {product_type}, Product Brand: {product_brand}")
-
-    if product_type or product_brand:
-        if product_type:  
-            products = products.filter(product_type__icontains=product_type)
-        if product_brand:
-            products = products.filter(product_brand__icontains=product_brand)
+    products = filter_products(request, products)
 
     user_reviews = {}
     if request.user.is_authenticated:
         user_reviews = {
-            review.product_id: review 
+            review.product_id: review
             for review in Review.objects.filter(
-                user=request.user, 
+                user=request.user,
                 product_id__in=[product.product_id for product in products]
-                )
-            }
+            )
+        }
+
     for product in products:
         product.user_reviewed = product.product_id in user_reviews
 
@@ -55,11 +85,25 @@ def show_products(request):
         'form': form,
         'product_form': AddProductForm(),
         'user_reviews': user_reviews,
-        'product_types': product_types,  
-        'product_brands': product_brands, 
+        'product_types': product_types,
+        'product_brands': product_brands,
     }
+    
     return render(request, "catalogue.html", context)
 
+def filter_products(request, products):
+    product_type = request.GET.get('product_type')
+    product_brand = request.GET.get('product_brand')
+    
+    print(product_type)
+    print(product_brand)
+
+    if product_type:
+        products = products.filter(product_type__icontains=product_type)
+    if product_brand:
+        products = products.filter(product_brand__icontains=product_brand)
+
+    return products
 # Editing product
 @superuser_required
 @login_required
