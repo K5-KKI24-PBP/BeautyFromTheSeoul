@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from catalogue.forms import AddProductForm, ProductFilterForm, ReviewForm
 from catalogue.models import Products, Review
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse, JsonResponse
@@ -9,6 +9,7 @@ from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
+from django.contrib import messages
 
 # Create your views here.
 def superuser_required(view_func):
@@ -22,26 +23,40 @@ def superuser_required(view_func):
 
 def show_products(request):
     products = Products.objects.all()
+    product_types = Products.objects.values_list('product_type', flat=True).distinct()
+    product_brands = Products.objects.values_list('product_brand', flat=True).distinct()
     form = ProductFilterForm(request.GET)
     
     product_type = request.GET.get('product_type')
     product_brand = request.GET.get('brand')
-    image = request.GET.get('image')
 
-    print(f"Product Name: {product_type}, Product Brand: {product_brand}, Image: {image}")
+    print(f"Product Name: {product_type}, Product Brand: {product_brand}")
 
-    if product_type or product_brand or image:
+    if product_type or product_brand:
         if product_type:  
             products = products.filter(product_type__icontains=product_type)
         if product_brand:
             products = products.filter(product_brand__icontains=product_brand)
-        if image:
-            products = products.filter(image__icontains=image)
+
+    user_reviews = {}
+    if request.user.is_authenticated:
+        user_reviews = {
+            review.product_id: review 
+            for review in Review.objects.filter(
+                user=request.user, 
+                product_id__in=[product.product_id for product in products]
+                )
+            }
+    for product in products:
+        product.user_reviewed = product.product_id in user_reviews
 
     context = {
         'products': products,
         'form': form,
-        'product_form': AddProductForm()
+        'product_form': AddProductForm(),
+        'user_reviews': user_reviews,
+        'product_types': product_types,  
+        'product_brands': product_brands, 
     }
     return render(request, "catalogue.html", context)
 
@@ -106,8 +121,14 @@ def get_product(request):
 @login_required
 @require_POST
 def add_review(request, product_id):
-    product = Products.objects.get(pk=product_id)
+    product = get_object_or_404(Products, pk=product_id)
     form = ReviewForm(request.POST)
+
+    user_review = Review.objects.filter(user=request.user, product=product).first()
+
+    if user_review:
+        messages.error(request, "You have already reviewed this product.")
+        return redirect(reverse('catalogue:show_products'))
 
     if form.is_valid():
         review, created = Review.objects.get_or_create(
@@ -115,7 +136,7 @@ def add_review(request, product_id):
             user=request.user,
             defaults={'rating': form.cleaned_data['rating'], 'comment': form.cleaned_data['comment']}
         )
-        if not created:  # If review exists, update it
+        if not created:  
             review.rating = form.cleaned_data['rating']
             review.comment = form.cleaned_data['comment']
             review.save()
