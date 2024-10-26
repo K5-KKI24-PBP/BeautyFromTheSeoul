@@ -187,17 +187,16 @@ def get_product(request):
     data = Products.objects.all()
     return HttpResponse(serializers.serialize('json', data), content_type='application/json')
     
+@csrf_exempt
 @login_required
 @require_POST
 def add_review(request, product_id):
     product = get_object_or_404(Products, pk=product_id)
     form = ReviewForm(request.POST)
-
     user_review = Review.objects.filter(user=request.user, product=product).first()
 
     if user_review:
-        messages.error(request, "You have already reviewed this product.")
-        return redirect(reverse('catalogue:show_products'))
+        return JsonResponse({"error": "You have already reviewed this product."}, status=400)
 
     if form.is_valid():
         review, created = Review.objects.get_or_create(
@@ -209,7 +208,13 @@ def add_review(request, product_id):
             review.rating = form.cleaned_data['rating']
             review.comment = form.cleaned_data['comment']
             review.save()
-        return redirect(reverse('catalogue:show_products'))
+        # Return review data as JSON
+        return JsonResponse({
+            "user": request.user.username,
+            "rating": review.rating,
+            "comment": review.comment,
+            "success": True
+        })
     else:
         return JsonResponse({"error": "Invalid data provided."}, status=400)
     
@@ -220,8 +225,8 @@ def delete_review(request, review_id):
     try:
         review = Review.objects.get(pk=review_id)
         review.delete()
-        return redirect(reverse('catalogue:show_products'))
+        return JsonResponse({"success": True, "message": "Review deleted successfully."})
     except Review.DoesNotExist:
-        return JsonResponse({"error": "Review not found."}, status=404)
+        return JsonResponse({"success": False, "message": "Review not found."}, status=404)
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400)
+        return JsonResponse({"success": False, "message": str(e)}, status=400)
