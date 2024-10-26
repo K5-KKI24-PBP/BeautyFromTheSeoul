@@ -29,27 +29,59 @@ h1, .card-title {
     color: #9fc6ff;
 }
 
+/* Base styles for buttons */
+.btn-primary, .btn-info, .btn-warning, .btn-danger {
+    border-width: 2px;
+    color: white;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Initial filled state for each button */
 .btn-primary {
     background-color: #071a58;
-    border: none;
-    color: white;
+    border-color: #071a58;
 }
 
 .btn-info {
     background-color: #071a58;
-    border: none;
+    border-color: #071a58;
 }
 
 .btn-warning {
     background-color: #ffc03e;
-    color: white;
-    border: none;
+    border-color: #ffc03e;
+    color: #071a58;
 }
 
 .btn-danger {
     background-color: #ccc2fe;
-    color: white;
-    border: none;
+    border-color: #ccc2fe;
+    color: #071a58;
+}
+
+/* Hover effect for outline style */
+.btn-primary:hover {
+    background-color: transparent;
+    color: #071a58;
+    border-color: #071a58;
+}
+
+.btn-info:hover {
+    background-color: transparent;
+    color: #071a58;
+    border-color: #071a58;
+}
+
+.btn-warning:hover {
+    background-color: transparent;
+    color: #071a58;
+    border-color: #ffc03e;
+}
+
+.btn-danger:hover {
+    background-color: transparent;
+    color: #071a58;
+    border-color: #ccc2fe;
 }
 
 .card {
@@ -66,7 +98,7 @@ h1, .card-title {
 
 .modal-header, .modal-footer {
     background-color: #9fc6ff;
-    color: white;
+    color: #e1dcca;
 }
 
 .card {
@@ -94,8 +126,20 @@ h1, .card-title {
     text-decoration: underline;
 }
 
+.ad-carousel-item img {
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
 
+.ad-carousel-item:hover img {
+    transform: scale(1.02);
+    filter: brightness(90%); 
+}
 
+.scale-on-hover {
+    transition: transform 0.3s ease; 
+}
 
-
+.scale-on-hover:hover {
+    transform: scale(1.05); 
+}
 
