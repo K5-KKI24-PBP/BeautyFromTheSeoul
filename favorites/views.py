@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from favorites.models import Favorite, Products
+from django.http import JsonResponse
 
 
 def show_favorites(request):
@@ -13,21 +14,25 @@ def show_favorites(request):
 
 def add_favorites(request, product_id):
     if not request.user.is_authenticated:
-        return redirect('/login/')
+        return JsonResponse({'error': 'You need to log in to add to favorites.'}, status=403)
     
     product = get_object_or_404(Products, product_id=product_id)
 
     favorite, created = Favorite.objects.get_or_create(user=request.user, skincare_product=product)
 
     if created:
-        messages.success(request, f'{product.product_name} has been added to your favorites!')
+        # Added to favorites
+        return JsonResponse({'added': True, 'message': f' The product has been added to your favorites!'})
     else:
-        messages.info(request, f'{product.product_name} is already in your favorites.')
-
-    return redirect('catalogue:show_products')
+        # Already a favorite, so remove it
+        favorite.delete()
+        return JsonResponse({'removed': True, 'message': f'Your liked product has been removed from your favorites.'})
 
 @login_required
 def remove_favorites(request, product_id):
+    if not request.user.is_authenticated:
+        return redirect('authentication:login')
+    
     product = get_object_or_404(Products, product_id=product_id)
     favorite = Favorite.objects.filter(user=request.user, skincare_product=product)
 

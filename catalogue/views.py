@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from catalogue.forms import AddProductForm, ProductFilterForm, ReviewForm
 from catalogue.models import Products, Review
+from favorites.models import Favorite
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse, JsonResponse
 from django.urls import reverse
 from functools import wraps
@@ -64,6 +65,11 @@ def show_products(request):
     products = Products.objects.all()
     product_types = Products.objects.values_list('product_type', flat=True).distinct()
     product_brands = Products.objects.values_list('product_brand', flat=True).distinct()
+    
+    favorite_product_ids = (
+        list(Favorite.objects.filter(user=request.user).values_list('skincare_product__product_id', flat=True))
+        if request.user.is_authenticated else []
+    )
 
     form = ProductFilterForm(request.GET)
     products = filter_products(request, products)
@@ -88,6 +94,7 @@ def show_products(request):
         'user_reviews': user_reviews,
         'product_types': product_types,
         'product_brands': product_brands,
+        'favorite_product_ids': favorite_product_ids,
     }
     
     return render(request, "catalogue.html", context)
