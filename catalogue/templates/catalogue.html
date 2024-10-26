@@ -11,23 +11,53 @@
 <h1 class="text-center">PRODUCTS</h1>
 <p class="text-center">Find What You're Looking For!</p>
 
-<!-- Filter Form -->
-<form method="GET" action="{% url 'catalogue:show_products' %}" class="form-inline justify-content-center mb-5">
-  <div class="form-group mr-2">
-      <input type="text" class="form-control" name="brand" placeholder="By Brand" value="{{ form.brand.value }}">
-  </div>
-  <div class="form-group mr-2">
-      <input type="text" class="form-control" name="product_type" placeholder="By Type" value="{{ form.product_type.value }}">
-  </div>
-  <button type="submit" class="btn btn-primary">Filter</button>
-</form>
+<!-- Filter Button -->
+<div class="text-center mb-5">
+    <button class="btn btn-primary" data-toggle="modal" data-target="#filterModal">Filter Products</button>
+</div>
 
+<!-- Filter Modal -->
+<div id="filterModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="filterModalLabel">Filter Products</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <h6>Select Brand:</h6>
+            <select id="brandSelect" class="form-control">
+              <option value="">-- Select Brand --</option>
+              {% for product_brands in product_brands %}
+              <option value="{{ product_brands }}">{{ product_brands }}</option>
+              {% endfor %}
+            </select>
+          
+          <hr>
+          
+          <!-- Product Type Selection -->
+          <h6>Select Product Type:</h6>
+          <select id="typeSelect" class="form-control">
+            <option value="">-- Select Product Type --</option>
+            {% for product_type in product_types %}
+            <option value="{{ product_type }}">{{ product_type }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="applyFilter()">Apply Filter</button>
+        </div>
+    </div>
+</div>
+</div>
 {% if user.is_superuser %}
 <div class="text-center mb-5">
   <button class="btn btn-primary" data-toggle="modal" data-target="#addproductModal" onclick="openProductModal()">Add Product</button>
 </div>
-
-{% endif %} 
+{% endif %}
 
 <div class="container">
     <div class="row">
@@ -37,17 +67,14 @@
         {% for product in products %}
         <div class="col-md-4 mb-4">
             <div class="card text-center">
-                <!-- Placeholder image or product image -->
                 <div class="product-image-placeholder" style="background-color: #f2f2f2; width: 100%; height: 250px;">
                     <img src="{{ product.image }}" alt="{{ product.product_name }}" class="img-fluid" style="object-fit: contain; width: 100%; height: 100%;">
                 </div>
                 <div class="card-body">
-                    <!-- Aligning product name and brand to the left -->
                     <h5 class="card-title" style="text-align: left;">{{ product.product_name }}</h5>
                     <p class="card-text" style="text-align: left;">{{ product.product_brand }}</p>
                     <p class="card-text" style="text-align: left;">{{ product.product_type }}</p>
 
-                    
                     <!-- Button to trigger modal -->
                     <div class="d-flex justify-content-between">
                       {% if user.is_superuser %}
@@ -59,36 +86,6 @@
                       <div style="text-align: right; margin-top: -10px;">
                           <button class="btn btn-secondary" data-toggle="modal" data-target="#productModal{{ forloop.counter }}">View</button>
                       </div>
-
-                      <!-- Favorites Button -->
-                      <style>
-                        .heart-button {
-                            background-color: transparent;
-                            border: none;
-                            color: #f2446a;
-                            font-size: 1.5rem;
-                            cursor: pointer;
-                            transition: color 0.3s; /* Optional smooth color transition */
-                        }
-                        .heart-button:hover {
-                            color: #ff7b91; /* Change to desired hover color */
-                        }
-                        </style>
-
-                        <div style="text-align: right; margin-top: -10px;">
-                            <form method="POST" action="{% url 'favorites:add_favorites' product.product_id %}">
-                                {% csrf_token %}
-                                <button type="submit" 
-                                    id="favoriteButton" 
-                                    class="btn bi-heart" 
-                                    style="background-color: transparent; border: none; color: #f2446a; font-size: 1.5rem;"
-                                    onclick="toggleFavorite(this);"
-                                    onmouseover="this.classList.add('bi-heart-fill');"
-                                    onmouseout="if(!this.classList.contains('favorite-added')) this.classList.remove('bi-heart-fill');">
-                                </button>
-                            </form>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -124,7 +121,6 @@
                                             <strong>{{ review.user.username }}:</strong> 
                                             {{ review.rating }} stars - "{{ review.comment }}"
                                             {% if user.is_superuser %}
-                                                <!-- Delete button for admins -->
                                                 <form method="post" action="{% url 'catalogue:delete_review' review.id %}" style="display:inline;">
                                                     {% csrf_token %}
                                                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
@@ -138,18 +134,22 @@
 
                                 <!-- Review Form -->
                                 {% if user.is_authenticated %}
-                                    <form method="post" action="{% url 'catalogue:add_review' product.product_id %}" id="reviewForm{{ forloop.counter }}">
-                                        {% csrf_token %}
-                                        <div class="form-group">
-                                            <label for="rating">Rating:</label>
-                                            <input type="number" name="rating" min="1" max="5" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="comment">Comment:</label>
-                                            <textarea name="comment" rows="3" required></textarea>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Submit Review</button>
-                                    </form>
+                                    {% if not product.user_reviewed %}
+                                        <form method="post" action="{% url 'catalogue:add_review' product.product_id %}" id="reviewForm{{ forloop.counter }}">
+                                            {% csrf_token %}
+                                            <div class="form-group">
+                                                <label for="rating">Rating:</label>
+                                                <input type="number" name="rating" min="1" max="5" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="comment">Comment:</label>
+                                                <textarea name="comment" rows="3" required></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                                        </form>
+                                    {% else %}
+                                        <p>You have already reviewed this product.</p>
+                                    {% endif %}
                                 {% else %}
                                     <p><a href="{% url 'authentication:login' %}">Log in</a> to leave a review.</p>
                                 {% endif %}
@@ -164,10 +164,6 @@
         </div>
         {% endfor %}
         {% endif %}
-
-        <div style="text-align: right; margin-top: -10px;">
-            <button class="btn btn-secondary" data-toggle="modal" data-target="#productModal{{ forloop.counter }}">View</button>
-        </div>
     </div>
 </div>
 
@@ -195,35 +191,23 @@
 {% endblock content %}
 
 {% block scripts %}
-
 <script>
     $(document).ready(function() {
-        // Ensure modal is triggered correctly
         $('[data-toggle="modal"]').click(function() {
             var targetModal = $(this).data("target");
             $(targetModal).modal('show');
         });
     });
 
-    $(document).ready(function() {
-    $("form[id^='reviewForm']").on('submit', function(event) {
-        event.preventDefault();
-        const form = $(this);
-        const url = form.attr("action");
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: form.serialize(),
-            success: function(response) {
-                alert("Review submitted!");
-                location.reload();  // Reload to show the new review
-            },
-            error: function(xhr) {
-                alert("Failed to submit review: " + xhr.responseJSON.error);
-            }
-        });
-    });
-});
+    function applyFilter() {
+      const selectedBrand = document.getElementById("brandSelect").value;
+      const selectedType = document.getElementById("typeSelect").value;
+  
+      const url = new URL(window.location.href);
+      if (selectedBrand) url.searchParams.set("product_brand", selectedBrand);
+      if (selectedType) url.searchParams.set("product_type", selectedType);
+  
+      window.location.href = url.toString();
+    }
 </script>
-
 {% endblock scripts %}
