@@ -34,9 +34,9 @@
               {% csrf_token %}
               <button type="submit" class="btn btn-danger">Delete</button>
             </form>
-            <a href="{% url 'main:edit_ad' ad.pk %}">
-              <button type="submit" class="btn btn-warning">Edit</button>
-            </a>
+            <a href="javascript:void(0);" onclick="openEditAdModal('{{ ad.pk }}', '{{ ad.brand_name }}', '{{ ad.image }}');">
+              <button type="button" class="btn btn-warning">Edit</button>
+            </a>            
           {% endif %}
 
         </div>
@@ -273,5 +273,64 @@
   </div>
 </div>
 </section>
+
+<!-- Edit Ad Modal -->
+<div class="modal fade" id="editAdModal" tabindex="-1" aria-labelledby="editAdModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="editAdModalLabel">Edit Ad</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form id="editAdForm" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="brand_name" class="form-label">Brand Name</label>
+                    <input type="text" class="form-control" id="brand_name" name="brand_name">
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Image URL</label>
+                    <input type="text" class="form-control" id="image" name="image">
+                </div>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<script>
+  function openEditAdModal(adId, brandName, imageUrl) {
+    document.getElementById('editAdForm').action = `/edit-ad/${adId}`; // Set form action
+    document.getElementById('brand_name').value = brandName; // Set brand name value
+    document.getElementById('image').value = imageUrl; // Set image URL value
+    $('#editAdModal').modal('show'); // Show modal
+  }
+
+  // Handle AJAX form submission
+  document.getElementById('editAdForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent form submission
+    let formData = new FormData(this);
+    
+    fetch(this.action, {
+      method: 'POST',
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        $('#editAdModal').modal('hide');
+        location.reload(); // Reload page to show the updated ad
+      } else {
+        alert('Error saving changes');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  });
+</script>
+
 
 {% endblock content %}

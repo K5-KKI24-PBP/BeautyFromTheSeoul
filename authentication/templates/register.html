@@ -1,28 +1,56 @@
-{% extends 'base.html' %} {% block meta %}
+{% extends 'base.html' %}
+
+{% block meta %}
 <title>Register</title>
-{% endblock meta %} {% block content %}
+{% endblock meta %}
 
-<div class="login">
-  <h1>Register</h1>
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <div class="container" style="max-width: 600px;">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="text-center mb-4">Register</h1>
 
-  <form method="POST">
-    {% csrf_token %}
-    <table>
-      {{ form.as_table }}
-      <tr>
-        <td></td>
-        <td><input type="submit" name="submit" value="Register" /></td>
-      </tr>
-    </table>
-  </form>
+        <form method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+          </div>
+          <div class="mb-3">
+            {{ form.name.label_tag }}
+            {{ form.name }}
+          </div>
+          <div class="mb-3">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+          </div>
+          <div class="mb-3">
+            {{ form.password1.label_tag }}
+            {{ form.password1 }}
+          </div>
+          <div class="mb-3">
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+          </div>
+          <div class="mb-3">
+            {{ form.user_role.label_tag }}
+            {{ form.user_role }}
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Register</button>
+        </form>
 
-  {% if messages %}
-  <ul>
-    {% for message in messages %}
-    <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
+        {% if messages %}
+        <div class="alert alert-warning mt-3">
+          <ul class="mb-0">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 </div>
-
 {% endblock content %}
