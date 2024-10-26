@@ -38,7 +38,6 @@
               <button type="button" class="btn btn-warning">Edit</button>
             </a>            
           {% endif %}
-
         </div>
       </div>
       {% endfor %}
@@ -300,37 +299,57 @@
   </div>
 </div>
 
+
 <script>
   function openEditAdModal(adId, brandName, imageUrl) {
-    document.getElementById('editAdForm').action = `/edit-ad/${adId}`; // Set form action
-    document.getElementById('brand_name').value = brandName; // Set brand name value
-    document.getElementById('image').value = imageUrl; // Set image URL value
-    $('#editAdModal').modal('show'); // Show modal
+    
+    // Set form action and populate form fields
+    document.getElementById('editAdForm').action = `/edit-ad/${adId}`;
+    document.getElementById('brand_name').value = brandName || ''; 
+    document.getElementById('image').value = imageUrl || '';
+
+    // Show modal
+    $('#editAdModal').modal('show');
   }
 
   // Handle AJAX form submission
   document.getElementById('editAdForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent form submission
+    event.preventDefault(); // Prevent standard form submission
+    
     let formData = new FormData(this);
+    let formDataObj = {};
+    let csrftoken = "";
+
+    // Add each pair to the object
+    for (let [key, value] of formData.entries()) {
+      if (key === "csrfmiddlewaretoken") {
+        csrftoken = value;
+      } else {
+        formDataObj[key] = value;
+      }
+    }
     
     fetch(this.action, {
       method: 'POST',
-      body: formData,
+      body: new URLSearchParams(formDataObj),
+      headers: {
+        'X-CSRFToken': csrftoken, // Add CSRF token here
+        'X-Requested-With': 'XMLHttpRequest', // AJAX request header
+      },
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
+    .then(response => {
+      if (response?.ok) {
         $('#editAdModal').modal('hide');
-        location.reload(); // Reload page to show the updated ad
+        location.reload(); // Reload page to reflect changes
       } else {
-        alert('Error saving changes');
+        alert(response?.message || 'Error saving changes'); // Show error message from response
       }
     })
     .catch(error => {
       console.error('Error:', error);
+      alert('An error occurred while saving changes');
     });
   });
 </script>
-
 
 {% endblock content %}
