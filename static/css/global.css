@@ -25,16 +25,12 @@ h1, .card-title {
     font-family: 'Laurasia';
 }
 
-.text-primary {
-    color: #071a58 !important;
-}
-
 .lead {
     color: #9fc6ff;
 }
 
 .btn-primary {
-    background-color: #9fc6ff;
+    background-color: #071a58;
     border: none;
     color: white;
 }
@@ -72,5 +68,34 @@ h1, .card-title {
     background-color: #9fc6ff;
     color: white;
 }
+
+.card {
+    transition: transform 0.3s ease;  
+}
+
+.card:hover {
+    transform: scale(1.05);  
+}
+
+.carousel-inner .col-md-3 img {
+    transition: transform 0.3s ease; 
+}
+
+.carousel-inner .col-md-3 img:hover {
+    transform: scale(1.05); 
+}
+
+.navbar-nav .nav-item a {
+    transition: transform 0.2s ease, text-decoration 0.2s ease;
+}
+
+.navbar-nav .nav-item a:hover {
+    transform: scale(1.1);
+    text-decoration: underline;
+}
+
+
+
+
 
 
