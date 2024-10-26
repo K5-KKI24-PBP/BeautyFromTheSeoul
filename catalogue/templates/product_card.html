@@ -55,12 +55,10 @@
                             // Update to filled heart
                             button.classList.add('bi-heart-fill', 'favorite-added');
                             button.classList.remove('bi-heart');
-                            alert(data.message);
                         } else if (data.removed) {
                             // Revert to outlined heart
                             button.classList.remove('bi-heart-fill', 'favorite-added');
                             button.classList.add('bi-heart');
-                            alert(data.message);
                         } else if (data.error) {
                             alert(data.error);
                         }
