@@ -1,0 +1,76 @@
+<div id="editproductModal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Edit Product</h5>
+                <button type="button" class="btn btn-close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="product_name">Product Name</label>
+                        <input type="text" class="form-control" id="product_name" name="product_name" placeholder="Enter product name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product_brand">Brand</label>
+                        <input type="text" class="form-control" id="product_brand" name="product_brand" placeholder="Enter product brand" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product_type">Type</label>
+                        <input type="text" class="form-control" id="product_type" name="product_type" placeholder="Enter product type" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product_description">Description</label>
+                        <textarea class="form-control" id="product_description" name="product_description" placeholder="Enter product description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="text" class="form-control" id="price" name="price" placeholder="Enter product price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="image">Image URL</label>
+                        <input type="url" class="form-control" id="image" name="image" placeholder="Enter image URL" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEditProductModal(productId) {
+            const productModal = new bootstrap.Modal(document.getElementById('editproductModal'));
+            const modalTitle = document.getElementById('productModalLabel');
+            const productForm = document.getElementById('productForm');
+        
+            modalTitle.textContent = 'Edit Product';
+            productForm.action = `/catalogue/edit/${productId}/`;  // Set action for form submission
+        
+            // Fetch the product data
+            fetch(`/catalogue/edit/${productId}/`, {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Set input values based on fetched product data
+                document.getElementById('product_name').value = data.product_data.product_name || "";
+                document.getElementById('product_brand').value = data.product_data.product_brand || "";
+                document.getElementById('product_type').value = data.product_data.product_type || "";
+                document.getElementById('product_description').value = data.product_data.product_description || "";
+                document.getElementById('price').value = data.product_data.price || "";
+                document.getElementById('image').value = data.product_data.image || "";
+        
+                // Show the modal
+                productModal.show();
+            })
+            .catch(error => {
+                console.error("Error fetching product data:", error);
+            });
+        }
+        </script>
+</div>

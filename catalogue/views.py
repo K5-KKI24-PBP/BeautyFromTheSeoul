@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from catalogue.forms import AddProductForm, ProductFilterForm, ReviewForm
 from catalogue.models import Products, Review
+from favorites.models import Favorite
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse, JsonResponse
 from django.urls import reverse
 from functools import wraps
@@ -64,6 +65,11 @@ def show_products(request):
     products = Products.objects.all()
     product_types = Products.objects.values_list('product_type', flat=True).distinct()
     product_brands = Products.objects.values_list('product_brand', flat=True).distinct()
+    
+    favorite_product_ids = (
+        list(Favorite.objects.filter(user=request.user).values_list('skincare_product__product_id', flat=True))
+        if request.user.is_authenticated else []
+    )
 
     form = ProductFilterForm(request.GET)
     products = filter_products(request, products)
@@ -88,6 +94,7 @@ def show_products(request):
         'user_reviews': user_reviews,
         'product_types': product_types,
         'product_brands': product_brands,
+        'favorite_product_ids': favorite_product_ids,
     }
     
     return render(request, "catalogue.html", context)
@@ -115,19 +122,69 @@ def filter_products_ajax(request):
     return JsonResponse({'html': html})
 
 # Editing product
-@superuser_required
+# @superuser_required
 @login_required
-def edit_product(request):
-    product = Products.objects.get()
+# def edit_product(request, product_id):
+#     print(f"Received product_id: {product_id}")  # Debugging: log product_id
 
+#     # Coba ambil produk dari database
+#     try:
+#         product = get_object_or_404(Products, pk=product_id)
+#         print(f"Product found: {product.product_name}")  # Debugging: log nama produk
+#     except Products.DoesNotExist:
+#         print("Product not found!")  # Debugging: log jika produk tidak ditemukan
+#         return JsonResponse({"error": "Product not found"}, status=404)
+
+#     # Buat form dengan instance produk
+#     form = AddProductForm(request.POST or None, instance=product)
+
+#     # Jika request method adalah POST, lakukan validasi form dan simpan
+#     if request.method == "POST":
+#         print("Request data:", request.POST)  # Debugging: log data request
+
+#         # Validasi form
+#         if form.is_valid():
+#             form.save()
+#             print("Form is valid. Product updated successfully.")  # Debugging: log sukses
+#             return redirect(reverse('catalogue:show_products'))
+#         else:
+#             print("Form is invalid:", form.errors)  # Debugging: log error form
+#             return JsonResponse({"success": False, "form_html": form.as_p()})
+
+#     # Jika request method adalah GET, kirimkan form HTML untuk modal
+#     form_html = form.as_p()
+#     return JsonResponse({"form_html": form_html})
+def edit_product(request, product_id):
+    print(f"Received product_id: {product_id}") 
+
+    product = get_object_or_404(Products, pk=product_id)
+    print(f"Product found: {product.product_name}") 
+    
     form = AddProductForm(request.POST or None, instance=product)
 
-    if form.is_valid() and request.method == "POST":
-        form.save()
-        return HttpResponseRedirect(reverse('main:show_main'))
+    if request.method == "POST":
+        print("Request data:", request.POST) 
 
-    context = {'form': form}
-    return render(request, "edit_product.html", context)
+        # Validate the form
+        if form.is_valid():
+            form.save()
+            return JsonResponse({"success": True, "message": "Product updated successfully."})
+        else:
+            return JsonResponse({"success": False, "errors": form.errors})
+
+    form_html = form.as_p()
+    return JsonResponse({
+        "form_html": form_html,
+        "product_data": {
+            "product_name": product.product_name,
+            "product_brand": product.product_brand,
+            "product_type": product.product_type,
+            "product_description": product.product_description,
+            "price": product.price,
+            "image": product.image,
+        }
+    })
+
 
 # Delete Product
 @superuser_required
@@ -180,17 +237,16 @@ def get_product(request):
     data = Products.objects.all()
     return HttpResponse(serializers.serialize('json', data), content_type='application/json')
     
+@csrf_exempt
 @login_required
 @require_POST
 def add_review(request, product_id):
     product = get_object_or_404(Products, pk=product_id)
     form = ReviewForm(request.POST)
-
     user_review = Review.objects.filter(user=request.user, product=product).first()
 
     if user_review:
-        messages.error(request, "You have already reviewed this product.")
-        return redirect(reverse('catalogue:show_products'))
+        return JsonResponse({"error": "You have already reviewed this product."}, status=400)
 
     if form.is_valid():
         review, created = Review.objects.get_or_create(
@@ -202,7 +258,13 @@ def add_review(request, product_id):
             review.rating = form.cleaned_data['rating']
             review.comment = form.cleaned_data['comment']
             review.save()
-        return redirect(reverse('catalogue:show_products'))
+        # Return review data as JSON
+        return JsonResponse({
+            "user": request.user.username,
+            "rating": review.rating,
+            "comment": review.comment,
+            "success": True
+        })
     else:
         return JsonResponse({"error": "Invalid data provided."}, status=400)
     
@@ -213,8 +275,9 @@ def delete_review(request, review_id):
     try:
         review = Review.objects.get(pk=review_id)
         review.delete()
-        return redirect(reverse('catalogue:show_products'))
+        return JsonResponse({"success": True, "message": "Review deleted successfully."})
     except Review.DoesNotExist:
-        return JsonResponse({"error": "Review not found."}, status=404)
+        return JsonResponse({"success": False, "message": "Review not found."}, status=404)
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400)
+        return JsonResponse({"success": False, "message": str(e)}, status=400)
+    

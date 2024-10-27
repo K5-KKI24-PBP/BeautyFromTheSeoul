@@ -1,3 +1,7 @@
+<div class="text-center py-2" style="background-color:#071a58">
+  <p class="mb-0 text-white" style="font-size: 0.9rem;">DONT MISS OUT ON THIS MONTH'S DISCOUNTS!</p>
+</div>
+
 <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom sticky-top">
   <div class="container-fluid">
     
@@ -9,31 +13,25 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ms-auto me-auto mb-2 mb-lg-0 align-items-center">
         
-        <!-- Products Dropdown -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Products
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'catalogue:show_products' %}">By Types</a></li>
-            <li><a class="dropdown-item" href="{% url 'catalogue:show_products' %}">By Brands</a></li>
-          </ul>
-        </li>
-        
         <!-- Promotion Events -->
-        <li class="nav-item">
+        <li class="nav-item" style="margin-left: 15px; margin-right: 15px;">
           <a class="nav-link {% if request.resolver_match.url_name == 'event' %}active{% endif %}" aria-current="page" href="{% url 'events:event' %}">Promotion Events</a>
         </li>
 
-        <!-- Centered Home Button (Logo) -->
-        <li class="nav-item">
+        <!-- Products -->
+        <li class="nav-item" style="margin-left: 15px; margin-right: 15px;">
+          <a class="nav-link {% if request.resolver_match.url_name == 'show_products' %}active{% endif %}" aria-current="page" href="{% url 'catalogue:show_products' %}">Products</a>
+        </li>
+
+        <!-- Home -->
+        <li class="nav-item" style="margin-left: 15px; margin-right: 15px;">
           <a class="navbar-brand mx-4" href="{% url 'main:show_main' %}">
             <h1 class="m-0">Beauty From The Seoul</h1>
           </a>
         </li>
 
         <!-- Store Locator -->
-        <li class="nav-item">
+        <li class="nav-item" style="margin-left: 15px; margin-right: 15px;">
           <a class="nav-link {% if request.resolver_match.url_name == 'locator' %}active{% endif %}" aria-current="page" href="{% url 'locator:locator' %}">Store Locator</a>
         </li>
       </ul>
@@ -41,9 +39,12 @@
       <div class="d-flex">
         {% if user.is_authenticated %}
           <!-- User Dropdown with Favorites and Logout -->
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-              Hello, {{ user.get_full_name|default:user.username }}!
+          <div class="dropdown me-3">
+            <button class="btn btn-primary dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person me-2" viewBox="0 0 16 16">
+                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+              </svg>
+              {{ user.get_full_name|default:user.username }}
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><a class="dropdown-item" href="{% url 'favorites:favorites' %}">Favorites</a></li>
@@ -52,7 +53,7 @@
           </div>
         {% else %}
           <!-- Login Button for Unauthenticated Users -->
-          <a class="btn btn-primary" href="{% url 'authentication:login' %}">Login</a>
+          <a class="btn btn-primary me-3" href="{% url 'authentication:login' %}">Login</a>
         {% endif %}
       </div>
     </div>
