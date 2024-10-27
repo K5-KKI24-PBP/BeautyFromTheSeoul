@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from favorites.models import Favorite, Products
+from catalogue.models import Review
 from django.http import JsonResponse
 
 
@@ -26,6 +27,13 @@ def show_favorites(request):
     product_type = request.GET.get('product_type')
     if product_type:
         favorites = favorites.filter(skincare_product__product_type__icontains=product_type)
+
+    # Check if the user has reviewed each product
+    for favorite in favorites:
+        favorite.skincare_product.user_reviewed = Review.objects.filter(
+            product=favorite.skincare_product,
+            user=request.user
+        ).exists()
 
     context = {
         'favorites': favorites,
