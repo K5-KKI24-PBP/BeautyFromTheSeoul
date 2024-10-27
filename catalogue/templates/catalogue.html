@@ -47,13 +47,22 @@ function applyFilter() {
         success: function(response) {
             console.log("AJAX Success:", response);
             $('#product-list').html(response.html);
+
+            // Force hide the modal
             $('#filterModal').modal('hide');
+            $('#filterModal').hide(); // Directly hide the modal as a backup
+            
+            // Manually remove any lingering backdrop and reset body class
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open');
+            $('body').css('padding-right', ''); // Fix for scrollbar shift issues
         },
         error: function(xhr, status, error) {
             console.error("AJAX Error:", error);
         }
     });
 }
+
 $(document).ready(function() {
     $('#addProductForm').on('submit', function(event) {
         event.preventDefault(); // Prevent the default form submission
@@ -63,12 +72,19 @@ $(document).ready(function() {
             type: "POST",
             data: $(this).serialize(), // Serialize the form data
             success: function(response) {
-                // Assuming you want to update the product list after adding a product
+                // Update the product list after adding a product
                 $('#product-list').html(response.html);
+                
+                // Force hide the modal
                 $('#addproductModal').modal('hide');
+                $('#addproductModal').hide(); // Directly hide as a backup
+
+                // Manually remove lingering backdrop and reset body class
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+                $('body').css('padding-right', ''); // Fix for scrollbar shift issues
             },
             error: function(xhr, status, error) {
-                // Handle errors
                 alert("Error: " + xhr.responseJSON.error);
             }
         });
@@ -170,4 +186,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+
+{% include 'footer.html' %}
 {% endblock content %}
