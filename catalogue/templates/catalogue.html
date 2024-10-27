@@ -38,145 +38,118 @@
 </div>
 
 <script>
-function applyFilter() {
-    const selectedBrand = document.getElementById("brandSelect").value;
-    const selectedType = document.getElementById("typeSelect").value;
+    function applyFilter() {
+        const selectedBrand = document.getElementById("brandSelect").value;
+        const selectedType = document.getElementById("typeSelect").value;
 
-    console.log(`Selected Brand: ${selectedBrand}, Selected Type: ${selectedType}`);
-
-    $.ajax({
-        url: "{% url 'catalogue:filter_products_ajax' %}",
-        type: "GET",
-        data: {
-            product_brand: selectedBrand,
-            product_type: selectedType
-        },
-        success: function(response) {
-            console.log("AJAX Success:", response);
-            $('#product-list').html(response.html);
-
-            // Force hide the modal
-            $('#filterModal').modal('hide');
-            $('#filterModal').hide(); // Directly hide the modal as a backup
-            
-            // Manually remove any lingering backdrop and reset body class
-            $('.modal-backdrop').remove();
-            $('body').removeClass('modal-open');
-            $('body').css('padding-right', ''); // Fix for scrollbar shift issues
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX Error:", error);
-        }
-    });
-}
-
-$(document).ready(function() {
-    $('#addProductForm').on('submit', function(event) {
-        event.preventDefault(); // Prevent the default form submission
+        console.log(`Selected Brand: ${selectedBrand}, Selected Type: ${selectedType}`);
 
         $.ajax({
-            url: "{% url 'catalogue:add_product_entry' %}", // Update with your URL
-            type: "POST",
-            data: $(this).serialize(), // Serialize the form data
+            url: "{% url 'catalogue:filter_products_ajax' %}",
+            type: "GET",
+            data: {
+                product_brand: selectedBrand,
+                product_type: selectedType
+            },
             success: function(response) {
-                // Update the product list after adding a product
+                console.log("AJAX Success:", response);
                 $('#product-list').html(response.html);
-                
-                // Force hide the modal
-                $('#addproductModal').modal('hide');
-                $('#addproductModal').hide(); // Directly hide as a backup
 
-                // Manually remove lingering backdrop and reset body class
+                // Force hide the modal
+                $('#filterModal').modal('hide');
+                $('#filterModal').hide(); // Directly hide the modal as a backup
+                
+                // Manually remove any lingering backdrop and reset body class
                 $('.modal-backdrop').remove();
                 $('body').removeClass('modal-open');
                 $('body').css('padding-right', ''); // Fix for scrollbar shift issues
             },
             error: function(xhr, status, error) {
-                alert("Error: " + xhr.responseJSON.error);
+                console.error("AJAX Error:", error);
             }
         });
-    });
-});
-
-function attachEventListeners() {
-    document.querySelectorAll("form[id^='reviewForm']").forEach(form => {
-        form.addEventListener("submit", function(event) {
-            event.preventDefault(); // Prevent default form submission
-            const formData = new FormData(this);
-            const url = this.action; // URL of the form
-
-            fetch(url, {
-                method: "POST",
-                body: formData,
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest",
-                    "X-CSRFToken": formData.get("csrfmiddlewaretoken")
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const reviewSection = document.querySelector("#reviews-" + this.id.replace("reviewForm", ""));
-                    const newReview = `
-                        <p><strong>${data.user}:</strong> ${data.rating} stars - "${data.comment}"</p>
-                    `;
-                    reviewSection.innerHTML += newReview;
-                    this.reset(); // Clear form fields
-                } else {
-                    alert(data.error);
-                }
-            })
-            .catch(error => console.error("Error:", error));
-        });
-    });
-
-    document.querySelectorAll(".delete-review-btn").forEach(button => {
-        button.addEventListener("click", function() {
-            const reviewId = this.getAttribute("data-review-id");
-            const productId = this.getAttribute("data-product-id");
-
-            // Confirm delete
-            if (!confirm("Are you sure you want to delete this review?")) {
-                return;
-            }
-
-            // Perform AJAX request to delete review
-            fetch(`/catalogue/delete_review/${reviewId}/`, {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
-                    "Content-Type": "application/json"
+    }
+    
+    $(document).ready(function() {
+        $('#addProductForm').on('submit', function(event) {
+            event.preventDefault();
+    
+            $.ajax({
+                url: "{% url 'catalogue:add_product_entry' %}",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function(response) {
+                    $('#product-list').html(response.html);
+                    $('#addproductModal').modal('hide');
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open').css('padding-right', '');
                 },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Remove the review element from the DOM
-                    const reviewElement = document.getElementById(`review-${reviewId}`);
-                    if (reviewElement) {
-                        reviewElement.remove();
-                    }
-
-                    // Check if there are no more reviews for this user on this product
-                    const reviewsContainer = document.getElementById(`reviews-${productId}`);
-                    if (reviewsContainer && !reviewsContainer.querySelector("p")) {
-                        // Reload the page to show the review form again
-                        location.reload();
-                    }
-
-                    alert(data.message);
-                } else {
-                    alert("Error: " + data.message);
+                error: function(xhr, status, error) {
+                    alert("Error: " + xhr.responseJSON.error);
                 }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert("An error occurred.");
+            });
+        });
+    
+        document.querySelectorAll("form[id^='reviewForm']").forEach(form => {
+            form.addEventListener("submit", function(event) {
+                event.preventDefault();
+                const formData = new FormData(this);
+                const url = this.action;
+    
+                fetch(url, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRFToken": formData.get("csrfmiddlewaretoken")
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const reviewSection = document.querySelector("#reviews-" + this.id.replace("reviewForm", ""));
+                        const newReview = `<p><strong>${data.user}:</strong> ${data.rating} stars - "${data.comment}"</p>`;
+                        reviewSection.innerHTML += newReview;
+                        this.reset();
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+            });
+        });
+    
+        document.querySelectorAll(".delete-review-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const reviewId = this.getAttribute("data-review-id");
+    
+                if (!confirm("Are you sure you want to delete this review?")) return;
+    
+                fetch(`/catalogue/delete_review/${reviewId}/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                        "Content-Type": "application/json"
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(`review-${reviewId}`).remove();
+                        alert(data.message);
+                    } else {
+                        alert(data.message || "Failed to delete review.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("An error occurred while deleting the review.");
+                });
             });
         });
     });
-}
-</script>
+    </script>
+    
 
 {% include 'footer.html' %}
 {% endblock content %}

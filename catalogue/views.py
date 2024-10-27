@@ -201,7 +201,7 @@ def delete_review(request, review_id):
     try:
         review = Review.objects.get(pk=review_id)
         review.delete()
-        return redirect(reverse('catalogue:show_products'))
+        return JsonResponse({"success": True, "message": "Review deleted successfully."})
     except Review.DoesNotExist:
         return JsonResponse({"success": False, "message": "Review not found."}, status=404)
     except Exception as e:
