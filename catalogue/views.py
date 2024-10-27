@@ -124,17 +124,36 @@ def filter_products_ajax(request):
 # Editing product
 @superuser_required
 @login_required
-def edit_product(request):
-    product = Products.objects.get()
+def edit_product(request, product_id):
+    print(f"Received product_id: {product_id}")  # Debugging: log product_id
 
+    # Coba ambil produk dari database
+    try:
+        product = get_object_or_404(Products, pk=product_id)
+        print(f"Product found: {product.product_name}")  # Debugging: log nama produk
+    except Products.DoesNotExist:
+        print("Product not found!")  # Debugging: log jika produk tidak ditemukan
+        return JsonResponse({"error": "Product not found"}, status=404)
+
+    # Buat form dengan instance produk
     form = AddProductForm(request.POST or None, instance=product)
 
-    if form.is_valid() and request.method == "POST":
-        form.save()
-        return HttpResponseRedirect(reverse('main:show_main'))
+    # Jika request method adalah POST, lakukan validasi form dan simpan
+    if request.method == "POST":
+        print("Request data:", request.POST)  # Debugging: log data request
 
-    context = {'form': form}
-    return render(request, "edit_product.html", context)
+        # Validasi form
+        if form.is_valid():
+            form.save()
+            print("Form is valid. Product updated successfully.")  # Debugging: log sukses
+            return redirect(reverse('catalogue:show_products'))
+        else:
+            print("Form is invalid:", form.errors)  # Debugging: log error form
+            return JsonResponse({"success": False, "form_html": form.as_p()})
+
+    # Jika request method adalah GET, kirimkan form HTML untuk modal
+    form_html = form.as_p()
+    return JsonResponse({"form_html": form_html})
 
 # Delete Product
 @superuser_required
