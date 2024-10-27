@@ -13,24 +13,6 @@ function openAddProductModal() {
 }
 
 function openEditProductModal(productId) {
-    // Ensure previous instances of the modal are removed
-    const existingModal = bootstrap.Modal.getInstance(document.getElementById('editproductModal'));
-    if (existingModal) existingModal.dispose();
-
-    // Reinitialize the modal
-    const productModal = new bootstrap.Modal(document.getElementById('editproductModal'), {
-        backdrop: true,
-        keyboard: true
-    });
-    
-    const productForm = document.getElementById('productForm');
-    const modalTitle = document.getElementById('productModalLabel');
-    const formFields = document.getElementById('formFields');
-    
-    modalTitle.textContent = 'Edit Product';
-    productForm.action = `/catalogue/edit/${productId}/`;
-    console.log('editactionurl:', productForm.action);
-
     // Fetch form HTML for the product
     fetch(`/catalogue/edit/${productId}/`, {
         method: 'GET',
@@ -39,7 +21,7 @@ function openEditProductModal(productId) {
     .then(response => response.json())
     .then(data => {
         if (data.form_html) {
-            formFields.innerHTML = data.form_html;
+            document.getElementById('formFields').innerHTML = data.form_html;
         } else {
             console.error("No form HTML returned");
         }
@@ -48,15 +30,26 @@ function openEditProductModal(productId) {
         console.error("Error fetching product form:", error);
     });
 
-    // Show the modal
-    productModal.show();
+    // Initialize the modal
+    const productModalElement = document.getElementById('editproductModal');
+    const productModal = new bootstrap.Modal(productModalElement);
 
-    // Ensure the backdrop is removed on close
-    document.getElementById('editproductModal').addEventListener('hidden.bs.modal', () => {
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    // Remove leftover backdrops and reset modal on close
+    productModalElement.addEventListener('hidden.bs.modal', () => {
+        // Remove all backdrops
+        document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+        
+        // Reset modal styles and classes
         document.body.classList.remove('modal-open');
         document.body.style.paddingRight = '';
+
+        // Fully detach and reattach modal to ensure clean re-initialization
+        const newModal = productModalElement.cloneNode(true);
+        productModalElement.parentNode.replaceChild(newModal, productModalElement);
     });
+
+    // Show the modal
+    productModal.show();
 }
 
 document.getElementById('productForm').addEventListener('submit', function(event) {
