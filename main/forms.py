@@ -18,3 +18,11 @@ class AdForm(ModelForm):
                 'placeholder': 'Enter Image URL',
             }),
         }
+
+    def clean_brand_name(self):
+        brand_name = self.cleaned_data.get("brand_name")
+        return strip_tags(brand_name)
+
+    def clean_image(self):
+        image = self.cleaned_data.get("image")
+        return strip_tags(image)

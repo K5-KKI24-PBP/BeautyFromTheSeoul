@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from locator.models import Locations
+from django.utils.html import strip_tags
 
 class StoreLocationForm(ModelForm):
     class Meta:
@@ -29,12 +30,27 @@ class StoreLocationForm(ModelForm):
             }),
         }
 
+    def clean_store_name(self):
+        store_name = self.cleaned_data.get("store_name")
+        return strip_tags(store_name)
+
+    def clean_street_name(self):
+        street_name = self.cleaned_data.get("street_name")
+        return strip_tags(street_name)
+
+    def clean_district(self):
+        district = self.cleaned_data.get("district")
+        return strip_tags(district)
+
     def clean_gmaps_link(self):
         gmaps_link = self.cleaned_data.get("gmaps_link")
         if gmaps_link:
             if not gmaps_link.startswith("https://"):
                 raise forms.ValidationError("Google Maps link must start with 'https://'")
         else:
-            raise forms.ValidationError("This field is required.")  # Validasi untuk field yang kosong
+            raise forms.ValidationError("This field is required.")
         return gmaps_link
 
+    def clean_store_image(self):
+        store_image = self.cleaned_data.get("store_image")
+        return strip_tags(store_image)

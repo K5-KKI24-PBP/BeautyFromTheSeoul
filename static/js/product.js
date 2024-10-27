@@ -13,23 +13,33 @@ function openAddProductModal() {
 }
 
 function openEditProductModal(productId) {
+    // Ensure previous instances of the modal are removed
+    const existingModal = bootstrap.Modal.getInstance(document.getElementById('editproductModal'));
+    if (existingModal) existingModal.dispose();
+
+    // Reinitialize the modal
+    const productModal = new bootstrap.Modal(document.getElementById('editproductModal'), {
+        backdrop: true,
+        keyboard: true
+    });
+    
     const productForm = document.getElementById('productForm');
-    const productModal = new bootstrap.Modal(document.getElementById('editproductModal')); // Ensure this refers to the correct modal
     const modalTitle = document.getElementById('productModalLabel');
     const formFields = document.getElementById('formFields');
-
+    
     modalTitle.textContent = 'Edit Product';
-    productForm.action = `/catalogue/edit/${productId}/`;  // Pass product_id here
+    productForm.action = `/catalogue/edit/${productId}/`;
     console.log('editactionurl:', productForm.action);
-    // Fetch the form HTML for the existing product
-    fetch(`/catalogue/edit/${productId}/`, {   
-        method: 'GET',  // Change to GET for retrieving form HTML (POST is for submitting)
+
+    // Fetch form HTML for the product
+    fetch(`/catalogue/edit/${productId}/`, {
+        method: 'GET',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(response => response.json())
     .then(data => {
         if (data.form_html) {
-            formFields.innerHTML = data.form_html; // Populate form fields with product data
+            formFields.innerHTML = data.form_html;
         } else {
             console.error("No form HTML returned");
         }
@@ -38,9 +48,16 @@ function openEditProductModal(productId) {
         console.error("Error fetching product form:", error);
     });
 
-    productModal.show(); // Show the modal
-}
+    // Show the modal
+    productModal.show();
 
+    // Ensure the backdrop is removed on close
+    document.getElementById('editproductModal').addEventListener('hidden.bs.modal', () => {
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.paddingRight = '';
+    });
+}
 
 document.getElementById('productForm').addEventListener('submit', function(event) {
     event.preventDefault();
