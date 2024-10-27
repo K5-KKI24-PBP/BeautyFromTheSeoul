@@ -23,44 +23,6 @@ def superuser_required(view_func):
             return HttpResponseForbidden("Access denied. You must be a superuser to access this page.")
     return _wrapped_view
 
-# def show_products(request):
-#     products = Products.objects.all()
-#     product_types = Products.objects.values_list('product_type', flat=True).distinct()
-#     product_brands = Products.objects.values_list('product_brand', flat=True).distinct()
-#     form = ProductFilterForm(request.GET)
-    
-#     product_type = request.GET.get('product_type')
-#     product_brand = request.GET.get('brand')
-
-#     print(f"Product Name: {product_type}, Product Brand: {product_brand}")
-
-#     if product_type or product_brand:
-#         if product_type:  
-#             products = products.filter(product_type__icontains=product_type)
-#         if product_brand:
-#             products = products.filter(product_brand__icontains=product_brand)
-
-#     user_reviews = {}
-#     if request.user.is_authenticated:
-#         user_reviews = {
-#             review.product_id: review 
-#             for review in Review.objects.filter(
-#                 user=request.user, 
-#                 product_id__in=[product.product_id for product in products]
-#                 )
-#             }
-#     for product in products:
-#         product.user_reviewed = product.product_id in user_reviews
-
-#     context = {
-#         'products': products,
-#         'form': form,
-#         'product_form': AddProductForm(),
-#         'user_reviews': user_reviews,
-#         'product_types': product_types,  
-#         'product_brands': product_brands, 
-#     }
-#     return render(request, "catalogue.html", context)
 def show_products(request):
     products = Products.objects.all()
     product_types = Products.objects.values_list('product_type', flat=True).distinct()
@@ -122,38 +84,8 @@ def filter_products_ajax(request):
     return JsonResponse({'html': html})
 
 # Editing product
-# @superuser_required
+@superuser_required
 @login_required
-# def edit_product(request, product_id):
-#     print(f"Received product_id: {product_id}")  # Debugging: log product_id
-
-#     # Coba ambil produk dari database
-#     try:
-#         product = get_object_or_404(Products, pk=product_id)
-#         print(f"Product found: {product.product_name}")  # Debugging: log nama produk
-#     except Products.DoesNotExist:
-#         print("Product not found!")  # Debugging: log jika produk tidak ditemukan
-#         return JsonResponse({"error": "Product not found"}, status=404)
-
-#     # Buat form dengan instance produk
-#     form = AddProductForm(request.POST or None, instance=product)
-
-#     # Jika request method adalah POST, lakukan validasi form dan simpan
-#     if request.method == "POST":
-#         print("Request data:", request.POST)  # Debugging: log data request
-
-#         # Validasi form
-#         if form.is_valid():
-#             form.save()
-#             print("Form is valid. Product updated successfully.")  # Debugging: log sukses
-#             return redirect(reverse('catalogue:show_products'))
-#         else:
-#             print("Form is invalid:", form.errors)  # Debugging: log error form
-#             return JsonResponse({"success": False, "form_html": form.as_p()})
-
-#     # Jika request method adalah GET, kirimkan form HTML untuk modal
-#     form_html = form.as_p()
-#     return JsonResponse({"form_html": form_html})
 def edit_product(request, product_id):
     print(f"Received product_id: {product_id}") 
 
@@ -168,7 +100,7 @@ def edit_product(request, product_id):
         # Validate the form
         if form.is_valid():
             form.save()
-            return JsonResponse({"success": True, "message": "Product updated successfully."})
+            return redirect(reverse('catalogue:show_products'))
         else:
             return JsonResponse({"success": False, "errors": form.errors})
 
@@ -184,7 +116,6 @@ def edit_product(request, product_id):
             "image": product.image,
         }
     })
-
 
 # Delete Product
 @superuser_required
@@ -280,4 +211,3 @@ def delete_review(request, review_id):
         return JsonResponse({"success": False, "message": "Review not found."}, status=404)
     except Exception as e:
         return JsonResponse({"success": False, "message": str(e)}, status=400)
-    

@@ -3,14 +3,20 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-<div class="container">
-    <div class="text-center">
-        <h1 class="display-5 mt-3"> Store Locator </h1>
-        <p class="text-muted mb-4">Find a skincare store near you!</p>
+<div class="bg-image" style="background-image: url('{% static 'images/locator.png' %}'); background-size: cover; background-position: center; height: 400px; position: relative; display: flex; align-items: center; justify-content: center;">
+
+    <div class="container text-center text-overlay">
+        <h1 class="display-5 text-white">Store Locator</h1>
+        <p class="text-light">Find a skincare store near you!</p>
+        <hr class="mx-auto" style="width: 60px; background-color: #e1dcca; height: 3px; border: none;">
     </div>
+</div>
+
+<div class="container">
     
     <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
+        <div class="col-12 col-md-8 col-lg-6 mt-5">
+            <h4 class="text-center" style="font-family: 'Laurasia';">Check Out Our Seoul Skincare Stores Map!</h4>
             <iframe 
                 src="https://www.google.com/maps/d/u/0/embed?mid=1eUKaCIKE-XTVcOgbm4WPCkHSnibBGQ4&ehbc=2E312F&noprof=1" 
                 width="100%" 

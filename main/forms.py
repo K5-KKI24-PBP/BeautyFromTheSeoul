@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from main.models import AdEntry
+from django.utils.html import strip_tags
 
 class AdForm(ModelForm):
     class Meta:

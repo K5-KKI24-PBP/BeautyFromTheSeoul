@@ -8,26 +8,34 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-<h1 class="text-center display-5 mt-3">Products</h1>
-<p class="text-center">Find What You're Looking For!</p>
+<div class="bg-image" style="background-image: url('{% static 'images/products.png' %}'); background-size: cover; background-position: center; height: 400px; position: relative; display: flex; align-items: center; justify-content: center;">
+
+    <!-- Text Overlay -->
+    <div class="container text-center text-overlay">
+        <h1 class="display-5 text-white">Products</h1>
+        <p class="text-light">Discover our selection of Korean skincare products!</p>
+        <hr class="mx-auto" style="width: 60px; background-color: #e1dcca; height: 3px; border: none;">
+    </div>
+</div>
 
 <!-- Filter Button -->
-<div class="text-center mb-5">
+<div class="text-center mb-5 mt-4">
+    <p>Looking for a specific brand or product type? Search here!</p>
     <button class="btn btn-primary" data-toggle="modal" data-target="#filterModal">Filter Products</button>
 </div>
 
 {% include 'filter_modal.html' %}
 
-{% if user.is_superuser %}
-<div class="text-center mb-5">
-    <button class="btn btn-primary" data-toggle="modal" data-target="#addproductModal" onclick="openAddProductModal()">Add Product</button>
-</div>
-{% endif %}
 
 {% include 'add_product_modal.html' %}
 {% include 'edit_product_modal.html' %}
 
 <div class="container">
+    {% if user.is_superuser %}
+    <div class="d-flex justify-content-end mb-4">
+        <button class="btn btn-primary" data-toggle="modal" data-target="#addproductModal">Add Product</button>
+    </div>
+    {% endif %}
     {% include 'product_list.html' %}
 </div>
 
