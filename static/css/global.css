@@ -30,7 +30,7 @@ h1, .card-title {
     color: #9fc6ff;
 }
 
-.btn-primary, .btn-info, .btn-warning, .btn-danger, .btn-success{
+.btn-primary, .btn-info, .btn-warning, .btn-danger, .btn-success, .btn-cancel{
     border-width: 2px;
     color: white;
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
@@ -70,6 +70,12 @@ h1, .card-title {
     color: #071a58;
 }
 
+.btn-cancel {
+    background-color: transparent;
+    border-color: #071a58;
+    color:#071a58;
+}
+
 .btn-primary:hover {
     background-color: transparent;
     color: #071a58;
@@ -105,6 +111,13 @@ h1, .card-title {
     color: #ccc2fe;
     border-color: #ccc2fe;
 }
+
+.btn-cancel:hover {
+    background-color:#071a58;
+    border-color: #071a58;
+    color:white;
+}
+
 
 .card {
     border: none;

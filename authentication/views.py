@@ -16,7 +16,7 @@ def login_user(request):
                 login(request, user)
                 next_page = request.GET.get("next")
                 response = redirect(next_page) if next_page else redirect("main:show_main")
-                response.set_cookie("user_logged_in", user.username)  # Store username instead of user object
+                response.set_cookie("user_logged_in", user.username) 
                 return response
             else:
                 messages.info(request, "Incorrect username or password. Please try again.")
