@@ -35,7 +35,6 @@ class RegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
-        # Apply form-control to password fields if not applied by Meta
         self.fields['password1'].widget.attrs.update({"class": "form-control", "placeholder": "Password"})
         self.fields['password2'].widget.attrs.update({"class": "form-control", "placeholder": "Confirm Password"})
 

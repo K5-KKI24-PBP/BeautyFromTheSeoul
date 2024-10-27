@@ -59,22 +59,6 @@ def edit_location(request, id):
     context = {'form': form}
     return render(request, "edit_location.html", context)
 
-# @csrf_exempt
-# @require_POST
-# def create_location_ajax(request):
-#     store_name = request.POST.get("store_name")
-#     street_name = request.POST.get("street_name")
-#     district = request.POST.get("district")
-#     gmaps_link = request.POST.get("gmaps_link")
-
-#     new_location = Locations(
-#         store_name=store_name, street_name=street_name,
-#         district=district, gmaps_link=gmaps_link,
-#     )
-#     new_location.save()
-
-#     return HttpResponse(b"CREATED", status=201)
-
 def show_xml(request):
     data = Locations.objects.all()
     return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
