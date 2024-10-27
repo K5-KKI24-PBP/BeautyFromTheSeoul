@@ -21,22 +21,7 @@ def superuser_required(view_func):
     return _wrapped_view
 
 def show_events(request):
-    events = Events.objects.all().order_by('start_date')
-    event_rsvps = {}
-
-    if request.user.is_authenticated:
-        user_profile = get_object_or_404(UserProfile, user=request.user)
-        for event in events:
-            rsvp = event.rsvps.filter(user=user_profile).first()
-            if rsvp:
-                event_rsvps[event.id] = rsvp.rsvp_status
-    
-    context = {
-        'events': events,
-        'event_rsvps': event_rsvps,
-        'is_superuser': request.user.is_superuser,
-    }
-    return render(request, 'show_event.html', context)
+    return render(request, 'show_event.html')
 
 @superuser_required
 @login_required(login_url='authentication:login')
@@ -73,14 +58,6 @@ def edit_event(request, id):
 
 @superuser_required
 @login_required(login_url='authentication:login')
-def delete_event(request, id):
-    event = Events.objects.get(id=id)
-    event.delete()
-
-    return redirect('events:event')
-
-@superuser_required
-@login_required(login_url='authentication:login')
 @csrf_exempt
 def delete_event_ajax(request, id):
     try:
@@ -93,17 +70,6 @@ def delete_event_ajax(request, id):
 
 @csrf_exempt
 @login_required(login_url='authentication:login')
-def rsvp_event(request, event_id):
-    event = get_object_or_404(Events, id=event_id)
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    rsvp, created = RSVP.objects.get_or_create(event=event, user=user_profile)
-    rsvp.rsvp_status = True
-    rsvp.save()
-    
-    return redirect('events:event')
-
-@csrf_exempt
-@login_required
 def rsvp_ajax(request, event_id):
     try:
         event = get_object_or_404(Events, id=event_id)
@@ -122,19 +88,8 @@ def rsvp_ajax(request, event_id):
     }
     return JsonResponse(data)
 
-
 @csrf_exempt
 @login_required(login_url='authentication:login')
-def delete_rsvp(request, event_id):
-    event = get_object_or_404(Events, id=event_id)
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    rsvp, created = RSVP.objects.get_or_create(event=event, user=user_profile)
-    rsvp.delete()
-    return redirect('events:event')
-
-
-@csrf_exempt
-@login_required
 def delete_rsvp_ajax(request, event_id):
     try:
         user = get_object_or_404(User, username=request.user.username)
@@ -150,20 +105,6 @@ def delete_rsvp_ajax(request, event_id):
     return JsonResponse({ 'message': 'RSVP not found' }, status=404)
 
 
-@superuser_required
-@login_required(login_url='authentication:login')
-def show_json_rsvp(request):
-    data = RSVP.objects.all()
-    return HttpResponse(
-        serializers.serialize("json", data), content_type="application/json"
-    )
-
-@superuser_required
-@login_required(login_url='authentication:login')
-def show_json(request):
-    events = Events.objects.all()
-    data = serializers.serialize('json', events)
-    return HttpResponse(data, content_type='application/json')
 
 def filter_events(request):
     month = request.GET.get('month', '')
@@ -201,11 +142,25 @@ def filter_events(request):
         'rsvps': serializers.serialize('json', rsvps),
     }, safe=False)
 
-
-@login_required
 def user_info(request):
     data = {
-        'is_superuser': request.user.is_superuser,
+        'is_authenticated': request.user.is_authenticated,
+        'is_superuser': request.user.is_superuser if request.user.is_authenticated else False,
     }
 
     return JsonResponse(data)
+
+@superuser_required
+@login_required(login_url='authentication:login')
+def show_json_rsvp(request):
+    data = RSVP.objects.all()
+    return HttpResponse(
+        serializers.serialize("json", data), content_type="application/json"
+    )
+
+@superuser_required
+@login_required(login_url='authentication:login')
+def show_json(request):
+    events = Events.objects.all()
+    data = serializers.serialize('json', events)
+    return HttpResponse(data, content_type='application/json')
