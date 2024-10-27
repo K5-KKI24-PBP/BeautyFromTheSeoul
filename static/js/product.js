@@ -1,30 +1,46 @@
-function openProductModal(productId = null) {
-    console.log(document.getElementById('productModal'));
-    var productModal = new bootstrap.Modal(document.getElementById('productModal'));
-    productModal.show();
-    
+console.log("javascript");
+function openAddProductModal() {
+    const productForm = document.getElementById('productForm');
+    const productModal = new bootstrap.Modal(document.getElementById('productModal'));
     const modalTitle = document.getElementById('productModalLabel');
     const formFields = document.getElementById('formFields');
-    const productForm = document.getElementById('productForm');
 
-    if (productId) {
-        modalTitle.textContent = 'Edit Product';
-        productForm.action = `/catalogue/edit/${productId}/`;
-        fetch(`/catalogue/edit/${productId}/`)
-            .then(response => response.text())
-            .then(html => {
-                formFields.innerHTML = html;
-            });
-    } else {
-        modalTitle.textContent = 'Add Product';
-        productForm.action = `/catalogue/add/`;
-        fetch(`/catalogue/add/`)
-            .then(response => response.text())
-            .then(html => {
-                formFields.innerHTML = html;
-            });
-    }
+    modalTitle.textContent = 'Add Product';
+    productForm.action = `/catalogue/add/`;
+    formFields.innerHTML = ''; // Clear the form fields for a new product entry
+
+    productModal.show(); // Show the modal
 }
+
+function openEditProductModal(productId) {
+    const productForm = document.getElementById('productForm');
+    const productModal = new bootstrap.Modal(document.getElementById('editproductModal')); // Ensure this refers to the correct modal
+    const modalTitle = document.getElementById('productModalLabel');
+    const formFields = document.getElementById('formFields');
+
+    modalTitle.textContent = 'Edit Product';
+    productForm.action = `/catalogue/edit/${productId}/`;  // Pass product_id here
+    console.log('editactionurl:', productForm.action);
+    // Fetch the form HTML for the existing product
+    fetch(`/catalogue/edit/${productId}/`, {   
+        method: 'GET',  // Change to GET for retrieving form HTML (POST is for submitting)
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.form_html) {
+            formFields.innerHTML = data.form_html; // Populate form fields with product data
+        } else {
+            console.error("No form HTML returned");
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching product form:", error);
+    });
+
+    productModal.show(); // Show the modal
+}
+
 
 document.getElementById('productForm').addEventListener('submit', function(event) {
     event.preventDefault();
