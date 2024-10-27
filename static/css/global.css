@@ -30,7 +30,7 @@ h1, .card-title {
     color: #9fc6ff;
 }
 
-.btn-primary, .btn-info, .btn-warning, .btn-danger, .btn-success, .btn-cancel{
+.btn-primary, .btn-info, .btn-warning, .btn-danger, .btn-success, .btn-cancel, .btn-close{
     border-width: 2px;
     color: white;
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
@@ -76,6 +76,12 @@ h1, .card-title {
     color:#071a58;
 }
 
+.btn-close {
+    background-color: #9fc6ff;
+    border-color: #9fc6ff;
+    color: #071a58;
+}
+
 .btn-primary:hover {
     background-color: transparent;
     color: #071a58;
@@ -118,6 +124,11 @@ h1, .card-title {
     color:white;
 }
 
+.btn-close:hover {
+    background-color: transparent;
+    color: #9fc6ff;
+    border-color: #9fc6ff;
+}
 
 .card {
     border: none;
@@ -141,7 +152,11 @@ h1, .card-title {
 
 .modal-header, .modal-footer {
     background-color: #071a58;
-    color: #FFFF;
+    color: #e1dcca;
+}
+
+.modal-footer {
+    background-color: #e1dcca;
 }
 
 .card {

@@ -12,6 +12,32 @@ class AddProductForm(forms.ModelForm):
     class Meta:
         model = Products
         fields = ['product_name', 'product_brand', 'product_type', 'product_description', 'price', 'image']
+        widgets = {
+            'product_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter name of product'
+            }),
+            'product_brand': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter brand of product'
+            }),
+            'product_type': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter type of product'
+            }),
+            'product_description': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter product description'
+            }),
+            'price': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter price'
+            }),
+            'image': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter image URL'
+            }),
+        }
 
 class ReviewForm(forms.ModelForm):
     class Meta:

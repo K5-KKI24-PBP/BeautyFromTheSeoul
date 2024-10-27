@@ -23,9 +23,9 @@ def filter_locations(request):
     else:
         locations = Locations.objects.all()
 
-    print("Filtered locations:", locations)  # Debugging print statement
+    # print("Filtered locations:", locations)  
     data = serializers.serialize('json', locations)
-    print("Serialized data:", data)  # Debugging print statement
+    # print("Serialized data:", data)  
     return JsonResponse(data, safe=False)
 
 

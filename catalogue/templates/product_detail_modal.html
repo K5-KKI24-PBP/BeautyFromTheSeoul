@@ -2,10 +2,8 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="productModalLabel{{ forloop.counter }}">{{ product.product_name }}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h2 class="modal-title ms-3" style="font-family: 'Laurasia';" id="productModalLabel{{ forloop.counter }}">{{ product.product_name }}</h2>
+                <button type="button" class="btn btn-close" data-bs-dismiss="modal"></button>         
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -43,15 +41,15 @@
                         <div id="review-form-container-{{ forloop.counter }}">
                             {% if user.is_authenticated %}
                                 {% if not product.user_reviewed %}
-                                    <form method="post" action="{% url 'catalogue:add_review' product.product_id %}" id="reviewForm{{ forloop.counter }}" data-product-id="{{ product.product_id }}">
+                                    <form method="post" action="{% url 'catalogue:add_review' product.product_id %}" id="reviewForm{{ forloop.counter }}" data-product-id="{{ product.product_id }}" class="mt-3">
                                         {% csrf_token %}
-                                        <div class="form-group">
+                                        <div class="form-group mb-2">
                                             <label for="rating">Rating:</label>
-                                            <input type="number" name="rating" min="1" max="5" required>
+                                            <input type="number" name="rating" min="1" max="5" required style="border: 2px solid #e1dcca; border-radius: 5px;">
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group mb-2">
                                             <label for="comment">Comment:</label>
-                                            <textarea name="comment" rows="3" required></textarea>
+                                            <textarea name="comment" rows="3" style="border: 2px solid #e1dcca; border-radius: 5px;"></textarea>
                                         </div>
                                         <button type="submit" class="btn btn-primary">Submit Review</button>
                                     </form>
@@ -69,7 +67,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

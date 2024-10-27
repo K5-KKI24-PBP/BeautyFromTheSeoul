@@ -43,7 +43,6 @@ def show_favorites(request):
 
     return render(request, 'favorites.html', context)
 
-
 def add_favorites(request, product_id):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'You need to log in to add to favorites.'}, status=403)

@@ -1,8 +1,8 @@
 <div id="filterModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="filterModalLabel">Filter Products</h5>
+                <h2 class="modal-title" id="filterModalLabel" style="font-family:'Laurasia';">Filter Products</h2>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"></span>
                 </button>
@@ -24,8 +24,8 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <div class="modal-footer" style="background-color:#e1dcca;">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" onclick="applyFilter()">Apply Filter</button>
             </div>
         </div>
