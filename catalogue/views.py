@@ -189,15 +189,10 @@ def add_review(request, product_id):
             review.rating = form.cleaned_data['rating']
             review.comment = form.cleaned_data['comment']
             review.save()
-        # Return review data as JSON
-        return JsonResponse({
-            "user": request.user.username,
-            "rating": review.rating,
-            "comment": review.comment,
-            "success": True
-        })
+        return redirect(reverse('catalogue:show_products'))
     else:
-        return JsonResponse({"error": "Invalid data provided."}, status=400)
+        messages.error(request, "Invalid data provided/Review from User already exists .")
+        return redirect(reverse('catalogue:show_products'))
     
 @superuser_required
 @login_required
@@ -206,7 +201,7 @@ def delete_review(request, review_id):
     try:
         review = Review.objects.get(pk=review_id)
         review.delete()
-        return JsonResponse({"success": True, "message": "Review deleted successfully."})
+        return redirect(reverse('catalogue:show_products'))
     except Review.DoesNotExist:
         return JsonResponse({"success": False, "message": "Review not found."}, status=404)
     except Exception as e:

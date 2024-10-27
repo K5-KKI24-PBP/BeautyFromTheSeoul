@@ -25,8 +25,6 @@
 </div>
 
 {% include 'filter_modal.html' %}
-
-
 {% include 'add_product_modal.html' %}
 {% include 'edit_product_modal.html' %}
 
@@ -100,7 +98,7 @@ $(document).ready(function() {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function() {
+function attachEventListeners() {
     document.querySelectorAll("form[id^='reviewForm']").forEach(form => {
         form.addEventListener("submit", function(event) {
             event.preventDefault(); // Prevent default form submission
@@ -131,9 +129,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .catch(error => console.error("Error:", error));
         });
     });
-});
 
-document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll(".delete-review-btn").forEach(button => {
         button.addEventListener("click", function() {
             const reviewId = this.getAttribute("data-review-id");
@@ -179,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
     });
-});
+}
 </script>
 
 {% include 'footer.html' %}
