@@ -18,7 +18,7 @@ def show_favorites(request):
 
     # Get sorting option
     sort_option = request.GET.get('sort', 'recent')
-    if sort_option == '1':
+    if sort_option == 'most_oldest':
         favorites = favorites.order_by('created_at')  # Oldest first
     else:
         favorites = favorites.order_by('-created_at')  # Most recent first

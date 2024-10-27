@@ -9,27 +9,33 @@
 
 <div class="container">
     <header>
-        <h1 class="mt-3"><i class="bi-heart-fill" style="color:#99D3FF;"></i> My Favorite Products</h1>
+        <h1 class="mt-3 text-center">
+            <i class="bi-heart-fill" style="color:#071a58;"></i>
+            My Favorite Products
+            <i class="bi-heart-fill" style="color:#071a58;"></i>
+        </h1>
         <hr class="hr">
         <form method="get" action="{% url 'favorites:favorites' %}" id="filter-sort-form">
-            <div class="col-sm-4">
-                <div class="form-group">
-                    <label for="sort">Sort by:</label>
-                    <select onchange="this.form.submit()" style="border-radius:30px; background-color:#6B94B3; opacity:40%; color:white" class="form-select form-select-md" name="sort">
-                        <option value="recent" {% if request.GET.sort == 'recent' %}selected{% endif %}>Recently Added</option>
-                        <option value="1" {% if request.GET.sort == '1' %}selected{% endif %}>Date Added</option>
-                    </select>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="sort">Sort by:</label>
+                        <select onchange="this.form.submit()" style="border-radius:30px; background-color:#071a58; opacity:40%; color:white" class="form-select form-select-md" name="sort">
+                            <option value="most_recent" {% if request.GET.sort == 'most_recent' %}selected{% endif %}>Most Recent</option>
+                            <option value="most_oldest" {% if request.GET.sort == 'most_oldest' %}selected{% endif %}>Most Oldest</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="form-group">
-                    <label for="product_type">Filter by Product Type:</label>
-                    <select onchange="this.form.submit()" style="border-radius:30px; background-color:#6B94B3; opacity:40%; color:white" class="form-select form-select-md" name="product_type">
-                        <option value="">Select Product Type</option>
-                        {% for product_type in product_types %}
-                            <option value="{{ product_type }}" {% if selected_product_type == product_type %}selected{% endif %}>{{ product_type }}</option>
-                        {% endfor %}
-                    </select>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="product_type">Filter by Product Type:</label>
+                        <select onchange="this.form.submit()" style="border-radius:30px; background-color:#071a58; opacity:40%; color:white" class="form-select form-select-md" name="product_type">
+                            <option value="">Select Product Type</option>
+                            {% for product_type in product_types %}
+                                <option value="{{ product_type }}" {% if selected_product_type == product_type %}selected{% endif %}>{{ product_type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
             </div>
         </form>
