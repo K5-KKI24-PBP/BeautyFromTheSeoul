@@ -1,7 +1,6 @@
 import calendar
-from datetime import timezone
+from datetime import datetime
 from functools import wraps
-import json
 from django.shortcuts import get_object_or_404, render, redirect
 from authentication.models import UserProfile
 from events.models import Events, RSVP
@@ -10,7 +9,7 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.contrib.auth.models import User
 
 def superuser_required(view_func):
     @wraps(view_func)
@@ -23,19 +22,21 @@ def superuser_required(view_func):
 
 def show_events(request):
     events = Events.objects.all().order_by('start_date')
+    event_rsvps = {}
+
+    if request.user.is_authenticated:
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+        for event in events:
+            rsvp = event.rsvps.filter(user=user_profile).first()
+            if rsvp:
+                event_rsvps[event.id] = rsvp.rsvp_status
+    
     context = {
-        'events': events
+        'events': events,
+        'event_rsvps': event_rsvps,
+        'is_superuser': request.user.is_superuser,
     }
     return render(request, 'show_event.html', context)
-
-@login_required(login_url='authentication:login')
-def rsvp_event(request, event_id):
-    event = get_object_or_404(Events, id=event_id)
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    rsvp, created = RSVP.objects.get_or_create(event=event, user=user_profile)
-    rsvp.rsvp_status = True
-    rsvp.save()
-    return redirect('events:event')
 
 @superuser_required
 @login_required(login_url='authentication:login')
@@ -78,7 +79,51 @@ def delete_event(request, id):
 
     return redirect('events:event')
 
+@superuser_required
+@login_required(login_url='authentication:login')
+@csrf_exempt
+def delete_event_ajax(request, id):
+    try:
+        event = Events.objects.get(id=id)
+    except Events.DoesNotExist:
+        return JsonResponse({'message': 'Event not found'}, status=404)
 
+    event.delete()
+    return JsonResponse({'message': 'Event deleted'})
+
+@csrf_exempt
+@login_required(login_url='authentication:login')
+def rsvp_event(request, event_id):
+    event = get_object_or_404(Events, id=event_id)
+    user_profile = get_object_or_404(UserProfile, user=request.user)
+    rsvp, created = RSVP.objects.get_or_create(event=event, user=user_profile)
+    rsvp.rsvp_status = True
+    rsvp.save()
+    
+    return redirect('events:event')
+
+@csrf_exempt
+@login_required
+def rsvp_ajax(request, event_id):
+    try:
+        event = get_object_or_404(Events, id=event_id)
+        user = get_object_or_404(User, username=request.user.username)
+        user_profile = get_object_or_404(UserProfile, user=user)
+    except:
+        return JsonResponse({'message': 'User or event not found' }, status=404)
+
+    rsvp, created = RSVP.objects.get_or_create(event=event, user=user_profile)
+    rsvp.rsvp_status = True
+    rsvp.save()
+
+    data = {
+        'message': 'RSVP successful',
+        'rsvp_id': rsvp.id
+    }
+    return JsonResponse(data)
+
+
+@csrf_exempt
 @login_required(login_url='authentication:login')
 def delete_rsvp(request, event_id):
     event = get_object_or_404(Events, id=event_id)
@@ -87,39 +132,80 @@ def delete_rsvp(request, event_id):
     rsvp.delete()
     return redirect('events:event')
 
-def show_json(request):
-    events = Events.objects.all()
-    data = {
-        'events': list(events.values())
-    }
-    return JsonResponse(data)
 
+@csrf_exempt
+@login_required
+def delete_rsvp_ajax(request, event_id):
+    try:
+        user = get_object_or_404(User, username=request.user.username)
+        event = get_object_or_404(Events, id=event_id)
+        user_profile = get_object_or_404(UserProfile, user=user)
+    except:
+        return JsonResponse({'message': 'User or event not found' }, status=404)
+
+    rsvp = RSVP.objects.filter(event=event, user=user_profile).first()
+    if rsvp:
+        rsvp.delete()
+        return JsonResponse({ 'message': 'RSVP deleted' })
+    return JsonResponse({ 'message': 'RSVP not found' }, status=404)
+
+
+@superuser_required
+@login_required(login_url='authentication:login')
 def show_json_rsvp(request):
     data = RSVP.objects.all()
     return HttpResponse(
         serializers.serialize("json", data), content_type="application/json"
     )
 
+@superuser_required
+@login_required(login_url='authentication:login')
+def show_json(request):
+    events = Events.objects.all()
+    data = serializers.serialize('json', events)
+    return HttpResponse(data, content_type='application/json')
+
 def filter_events(request):
     month = request.GET.get('month', '')
     year = request.GET.get('year', '')
 
-    # Initialize an empty queryset
-    events = Events.objects.none()
+    try:
+        user = User.objects.get(username=request.user.username)
+        user_profile = UserProfile.objects.get(user=user)
+    except User.DoesNotExist:
+        user_profile = None
 
     if month.isdigit() and year.isdigit():
         month = int(month)
         year = int(year)
-        # Determine the number of days in the specified month
         last_day = calendar.monthrange(year, month)[1]
-        # Create datetime objects for the first and last day of the month
-        start_date = timezone.datetime(year, month, 1)
-        end_date = timezone.datetime(year, month, last_day)
-
-        # Filter events where start or end date is within the specified month and year
+        start_date = datetime(year, month, 1)
+        end_date = datetime(year, month, last_day)
         events = Events.objects.filter(start_date__lte=end_date, end_date__gte=start_date)
+    else:
+        events = Events.objects.all()  
+
+    if user_profile:
+        rsvps = RSVP.objects.filter(event__in=events, user=user_profile) 
+        rsvp_event_ids = [rsvp.event.id for rsvp in rsvps]
+
+        rsvp_events = events.filter(id__in=rsvp_event_ids)
+        non_rsvp_events = events.exclude(id__in=rsvp_event_ids)
+
+        events = list(rsvp_events) + list(non_rsvp_events)
+    else:
+        rsvps = []
+    
+    return JsonResponse({
+        'events': serializers.serialize('json', events),
+        'rsvps': serializers.serialize('json', rsvps),
+    }, safe=False)
 
 
-    # Serialize and return the filtered events
-    data = serializers.serialize('json', events)
-    return JsonResponse(data, safe=False)
+@login_required
+def user_info(request):
+    data = {
+        'is_superuser': request.user.is_superuser,
+    }
+
+    return JsonResponse(data)

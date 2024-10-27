@@ -1,19 +1,47 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block content %}
-{% include 'navbar.html' %}
-<h1>Edit Promotion Event</h1>
 
-<form method="POST">
-  {% csrf_token %}
-  <table>
-    {{ form.as_table }}
-    <tr>
-      <td></td>
-      <td>
-        <input type="submit" value="Edit Event" />
-      </td>
-    </tr>
-  </table>
-</form>
+{% block meta %}
+<title>Edit Event</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <div class="container" style="max-width: 600px;">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="text-center mb-4">Edit Promotion Event</h1>
+
+        <form method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.name.label_tag }}
+            {{ form.name }}
+          </div>
+          <div class="mb-3">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+          </div>
+          <div class="mb-3">
+            {{ form.start_date.label_tag }}
+            {{ form.start_date }}
+          </div>
+          <div class="mb-3">
+            {{ form.end_date.label_tag }}
+            {{ form.end_date }}
+          </div>
+          <div class="mb-3">
+            {{ form.location.label_tag }}
+            {{ form.location }}
+          </div>
+          <div class="mb-3">
+            {{ form.promotion_type.label_tag }}
+            {{ form.promotion_type }}
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Edit Event</button>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}
