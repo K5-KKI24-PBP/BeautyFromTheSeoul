@@ -186,35 +186,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
-
-function openEditProductModal(productId) {
-    const productForm = document.getElementById('productForm');
-    const productModal = new bootstrap.Modal(document.getElementById('editproductModal')); // Ensure this refers to the correct modal
-    const modalTitle = document.getElementById('productModalLabel');
-    const formFields = document.getElementById('formFields');
-
-    modalTitle.textContent = 'Edit Product';
-    productForm.action = `/catalogue/edit/${productId}/`;  // Pass product_id here
-    console.log('editactionurl:', productForm.action);
-    // Fetch the form HTML for the existing product
-    fetch(`/catalogue/edit/${productId}/`, {   
-        method: 'GET',  // Change to GET for retrieving form HTML (POST is for submitting)
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.form_html) {
-            formFields.innerHTML = data.form_html; // Populate form fields with product data
-        } else {
-            console.error("No form HTML returned");
-        }
-    })
-    .catch(error => {
-        console.error("Error fetching product form:", error);
-    });
-
-    productModal.show(); // Show the modal
-}
 </script>
 
 {% include 'footer.html' %}
