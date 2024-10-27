@@ -23,7 +23,7 @@
       <div class="carousel-item ad-carousel-item">
         <a href="{% url 'catalogue:show_products' %}?product_brand={{ ad.brand_name }}">
           <img src="{{ ad.image }}" class="d-block w-100" alt="{{ ad.brand_name }}" style="width: 700px; height: 500px; object-fit: cover;">
-          <div class="carousel-caption d-none d-md-block">
+          <div class="carousel-caption">
             {% if request.user.is_staff %}
               {% if not ad.is_approved %}
                 <form method="post" action="{% url 'main:approve_ad' ad.pk %}">
@@ -67,9 +67,9 @@
         <a href="{% url 'catalogue:show_products' %}?product_type=Cleanser" style="text-decoration: none; color: inherit;">
           <div class="card" style="width: 100%; background-color: #ffc03e;">
             <div class="card-body">
-              <p class="card-text">CLEANSER</p>
+              <h3 class="card-title">Cleanser</h3>
+              <img src="https://images.pexels.com/photos/3762460/pexels-photo-3762460.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load" class="card-img-bottom" style="height: 400px; object-fit:cover;">
             </div>
-            <img src="https://images.pexels.com/photos/3762460/pexels-photo-3762460.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load" class="card-img-bottom" style="height: 460px; object-fit:cover;">
           </div>
         </a>
       </div>
@@ -78,9 +78,9 @@
         <a href="{% url 'catalogue:show_products' %}?product_type=Moisturizer" style="text-decoration: none; color: inherit;">
           <div class="card" style="width: 100%; background-color: #9fc6ff;">
             <div class="card-body">
-              <p class="card-text">MOISTURIZER</p>
+              <h3 class="card-title">Moisturizer</h3>
+              <img src="https://images.pexels.com/photos/3762875/pexels-photo-3762875.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="card-img-bottom" style="height: 400px; object-fit:cover;">
             </div>
-            <img src="https://images.pexels.com/photos/3762875/pexels-photo-3762875.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="card-img-bottom" style="height: 460px; object-fit:cover;">
           </div>
         </a>
       </div>
@@ -89,9 +89,9 @@
         <a href="{% url 'catalogue:show_products' %}?product_type=Serum" style="text-decoration: none; color: inherit;">
           <div class="card" style="width: 100%; background-color: #ccc2fe;">
             <div class="card-body">
-              <p class="card-text">SERUM</p>
+              <h3 class="card-title">Serum</h3>
+              <img src="https://images.pexels.com/photos/3762882/pexels-photo-3762882.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="card-img-bottom" style="height: 400px; object-fit:cover;">
             </div>
-            <img src="https://images.pexels.com/photos/3762882/pexels-photo-3762882.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="card-img-bottom" style="height: 460px; object-fit:cover;">
           </div>
         </a>
       </div>
@@ -100,9 +100,9 @@
         <a href="{% url 'catalogue:show_products' %}?product_type=Essence" style="text-decoration: none; color: inherit;">
           <div class="card" style="width: 100%;">
             <div class="card-body">
-              <p class="card-text">ESSENCE</p>
+              <h3 class="card-title">Essence</h3>
+              <img src="https://images.pexels.com/photos/3762871/pexels-photo-3762871.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load" class="card-img-bottom" style="height: 400px; object-fit:cover;">
             </div>
-            <img src="https://images.pexels.com/photos/3762871/pexels-photo-3762871.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load" class="card-img-bottom" style="height: 460px; object-fit:cover;">
           </div>
         </a>
       </div>
@@ -117,12 +117,16 @@
       <div class="row">
 
         <div class="col-md-6 p-0">
-          <img src="https://mir-s3-cdn-cf.behance.net/project_modules/fs/c4b2ae88893103.5de4d4e1075f3.jpg" alt="On Budget" style="width: 100%; height: 100%; object-fit: cover;">
+          <div class="fade-on-hover">
+            <img src="https://mir-s3-cdn-cf.behance.net/project_modules/fs/c4b2ae88893103.5de4d4e1075f3.jpg" alt="On Budget" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
         </div>
         
         <div class="col-md-6 d-flex flex-column align-items-center justify-content-center" style="background-color: #071a58; color:#99D3FF;">
-          <h1 class="text-white">ON A BUDGET?</h1>
-          <h4>RSVP for promotion events near you!</h4>
+          <div class="scale-on-hover"> 
+            <h1 class="text-white">ON A BUDGET?</h1>
+            <h5>RSVP for promotion events near you!</h5>
+          </div>
         </div>
       </div>
     </div>
@@ -132,16 +136,18 @@
 
 <section class="im-looking-for text-center mt-5 mb-5">
   <h1>I'M STRUGGLING WITH...</h1>
+  <p class="mt-2 mb-4">We understand the struggles. Discover effective solutions for your skin concerns!</p>
   <div class="container">
     <div class="row mt-3">
 
       <div class="col-md-4">
         <a href="{% url 'catalogue:show_products' %}?product_type=Eye+Treatment" style="text-decoration: none; color: inherit;">
           <div class="card" style="width: 100%;background-color: #9fc6ff;">
+            <img src="{% static 'images/dark_circles.png' %}" class="card-img-bottom">
             <div class="card-body">
-              <p class="card-text">DARK CIRCLES</p>
+              <h2 class="card-title">Dark Circles</h2>
+              <p class="card-text">Brighten your under-eye area and reduce the appearance of fatigue with our targeted treatments.</p>
             </div>
-            <img src="https://img.freepik.com/free-photo/front-view-woman-with-brown-eyes_23-2149457546.jpg?t=st=1729968221~exp=1729971821~hmac=06a6b5b6fb500bc35312e0912ceca4a4a15269cad777c54d3cd1031ad70f8c90&w=2000" class="card-img-bottom">
           </div>
         </a>
       </div>
@@ -149,10 +155,11 @@
       <div class="col-md-4">
         <a href="{% url 'catalogue:show_products' %}?product_type=Other+Spot+Treatments" style="text-decoration: none; color: inherit;">
           <div class="card" style="width: 100%; background-color: #ffc03e;">
+            <img src="{% static 'images/acne.jpg' %}" class="card-img-bottom">
             <div class="card-body">
-              <p class="card-text">ACNE</p>
+              <h2 class="card-title">Acne</h2>
+              <p class="card-text">Fight breakouts effectively with our specially formulated solutions for clearer skin.</p>
             </div>
-            <img src="https://img.freepik.com/free-photo/confident-young-woman-with-acne-close-up_23-2148982535.jpg?t=st=1729968009~exp=1729971609~hmac=f12a56fbfd839e71dd9ebc2e0574d45d289eccb1ce065aca11f2b8c901eaf87a&w=2000" class="card-img-bottom">
           </div>
         </a>
       </div>
@@ -160,10 +167,11 @@
       <div class="col-md-4">
         <a href="{% url 'catalogue:show_products' %}?product_type=Lip+Treatment" style="text-decoration: none; color: inherit;">
           <div class="card" style="width: 100%; background-color: #ccc2fe;">
+            <img src="{% static 'images/dry_lips.png' %}" class="card-img-bottom">
             <div class="card-body">
-              <p class="card-text">DRY LIPS</p>
+              <h2 class="card-title">Dry Lips</h2>
+              <p class="card-text">Deeply nourish and hydrate your lips to restore its natural moisture balance.</p>
             </div>
-            <img src="https://img.freepik.com/free-photo/portrait-white-woman-doing-her-daily-skincare-routine_53876-146164.jpg?t=st=1729968117~exp=1729971717~hmac=4e23700dc9af01cd120db3958dcd7c95486ac32e72a870c579783976a8a16293&w=2000" class="card-img-bottom">
           </div>
         </a>
       </div>
@@ -179,11 +187,13 @@
       <div class="row">
 
         <div class="col-md-6 d-flex flex-column align-items-center justify-content-center" style="background-color: #071a58; color:#ccc2fe;">
-          <h1 class="text-white">SPA DAY INCOMING?</h1>
-          <h4>Pick out a face mask for you and your girls to enjoy!</h4>
+          <div class="scale-on-hover">
+            <h1 class="text-white">SPA DAY INCOMING?</h1>
+            <h5>Pick out a face mask for you and your girls to enjoy!</h5>
+          </div>
         </div>
 
-        <div class="col-md-6 p-0">
+        <div class="col-md-6 p-0 fade-on-hover">
           <img src="https://images.pexels.com/photos/8509197/pexels-photo-8509197.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="On Budget" style="width: 100%; height: 450px; object-fit: cover;">
         </div>
 
@@ -195,9 +205,11 @@
 <section class="stores-near text-center mt-5 mb-5">
   <a href="{% url 'locator:locator' %}" style="text-decoration: none; color: inherit;">
     <div class="scale-on-hover">
-      <h1>BROWSE AT STORES NEAR YOU!</h1>
+      <h1>EXPLORE STORES NEAR YOU!</h1>
     </div>
   </a>
+
+  <p class="mt-2 mb-4">Find your favorite products in-store and enjoy a personalized shopping experience!</p>
 
   <div id="multiItemCarousel" class="carousel slide mt-4" data-bs-ride="carousel">
     <div class="carousel-inner overflow-visible">
@@ -205,23 +217,23 @@
       <div class="carousel-item active">
         <div class="row">
           <div class="col-md-3 px-2">
-            <a href="https://g.co/kgs/YFcqSM9" target="_blank">
-              <img src="{% static 'images/store1.jpg' %}" class="d-block w-100" alt="Store 1" style="height: 250px; object-fit: cover; border: 4px solid #9fc6ff;">
+            <a href="https://maps.google.com/?cid=9929880658946518724" target="_blank">
+              <img src="{% static 'images/store1.jpg' %}" class="d-block w-100 rounded shadow" alt="Store 1" style="height: 250px; object-fit: cover; border: 7px solid #9fc6ff;">
             </a>
           </div>
           <div class="col-md-3 px-2">
-            <a href="https://g.co/kgs/w5Dc9pq" target="_blank">
-              <img src="{% static 'images/store2.jpg' %}" class="d-block w-100" alt="Store 2" style="height: 250px; object-fit: cover; border: 4px solid #ffc03e;">
+            <a href="https://maps.google.com/?cid=619527721089073001" target="_blank">
+              <img src="https://lh3.googleusercontent.com/p/AF1QipNhQxal5m98tGPg3sXqDLAaLTPfHuV6t0020634=s1360-w1360-h1020" class="d-block w-100 rounded shadow" alt="Store 2" style="height: 250px; object-fit: cover; border: 7px solid #ffc03e;">
             </a>
           </div>
           <div class="col-md-3 px-2">
-            <a href="https://g.co/kgs/RqsESeV" target="_blank">
-              <img src="{% static 'images/store3.jpg' %}" class="d-block w-100" alt="Store 3" style="height: 250px; object-fit: cover; border: 4px solid #ccc2fe;">
+            <a href="https://maps.google.com/?cid=5590760012686468635" target="_blank">
+              <img src="https://www.klairscosmetics.com/wp-content/uploads/2021/08/Untitled-1.jpg" class="d-block w-100 rounded shadow" alt="Store 3" style="height: 250px; object-fit: cover; border: 7px solid #ccc2fe;">
             </a>
           </div>
           <div class="col-md-3 px-2">
-            <a href="https://g.co/kgs/7284BCg" target="_blank">
-              <img src="{% static 'images/store4.jpg' %}" class="d-block w-100" alt="Store 4" style="height: 250px; object-fit: cover; border: 4px solid #9fc6ff;">
+            <a href="https://maps.google.com/?cid=13851289114136110333" target="_blank">
+              <img src="https://lh3.googleusercontent.com/p/AF1QipOCMH9aRvDSZeb27zp84sRrLWCImHhthw7NXLtR=s680-w680-h510" class="d-block w-100 rounded shadow" alt="Store 4" style="height: 250px; object-fit: cover; border: 7px solid #9fc6ff;">
             </a>
           </div>
         </div>
@@ -230,23 +242,23 @@
       <div class="carousel-item">
         <div class="row">
           <div class="col-md-3 px-2">
-            <a href="https://g.co/kgs/oUGcQyc" target="_blank">
-              <img src="{% static 'images/store5.jpg' %}" class="d-block w-100" alt="Store 5" style="height: 250px; object-fit: cover; border: 4px solid #ffc03e;">
+            <a href="https://maps.google.com/?cid=4076301142218116484" target="_blank">
+              <img src="https://lh3.googleusercontent.com/p/AF1QipNM1seBCrWZhbeHY6mrjcSxVIFf3Y4D7RTve4PT=s1360-w1360-h1020" class="d-block w-100 rounded shadow" alt="Store 5" style="height: 250px; object-fit: cover; border: 7px solid #ffc03e;">
             </a>
           </div>
           <div class="col-md-3 px-2">
-            <a href="https://g.co/kgs/95Yqwnf" target="_blank">
-              <img src="{% static 'images/store6.jpg' %}" class="d-block w-100" alt="Store 6" style="height: 250px; object-fit: cover; border: 4px solid #ccc2fe;">
+            <a href="https://maps.google.com/?cid=16167934303626336711" target="_blank">
+              <img src="https://lh3.googleusercontent.com/p/AF1QipOGo4eUc9aoOQxl0rXMhSnl3KOmQDOS5fU0Y3Bb=s1360-w1360-h1020" class="d-block w-100 rounded shadow" alt="Store 6" style="height: 250px; object-fit: cover; border: 7px solid #ccc2fe;">
             </a>
           </div>
           <div class="col-md-3 px-2">
-            <a href="https://g.co/kgs/32t4j6t" target="_blank">
-              <img src="{% static 'images/store7.jpg' %}" class="d-block w-100" alt="Store 7" style="height: 250px; object-fit: cover; border: 4px solid #9fc6ff;">
+            <a href="https://maps.google.com/?cid=8318974088576372715" target="_blank">
+              <img src="https://lh3.googleusercontent.com/p/AF1QipNbO6f91UOZnIUO21tmg5bW1wb5lT_JSqdH-Q7r=s1360-w1360-h1020" class="d-block w-100 rounded shadow" alt="Store 7" style="height: 250px; object-fit: cover; border: 7px solid #9fc6ff;">
             </a>
           </div>
           <div class="col-md-3 px-2">
-            <a href="https://g.co/kgs/w9STH52" target="_blank">
-              <img src="{% static 'images/store8.jpg' %}" class="d-block w-100" alt="Store 8" style="height: 250px; object-fit: cover; border: 4px solid #ffc03e;">
+            <a href="https://maps.google.com/?cid=4900586277751666716" target="_blank">
+              <img src="https://lh3.googleusercontent.com/p/AF1QipOWFhmJ6iLYbXofbWEnvWdUog3bPmeA3w3xEW3y=s680-w680-h510" class="d-block w-100 rounded shadow" alt="Store 8" style="height: 250px; object-fit: cover; border: 7px solid #ffc03e;">
             </a>
           </div>
         </div>
@@ -270,13 +282,15 @@
     <div class="container-fluid">
       <div class="row">
 
-        <div class="col-md-6 p-0">
+        <div class="col-md-6 p-0 fade-on-hover">
           <img src="https://images.pexels.com/photos/5202466/pexels-photo-5202466.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="On Budget" style="width: 100%; height: 400x; object-fit: cover;">
         </div>
 
         <div class="col-md-6 d-flex flex-column align-items-center justify-content-center" style="background-color: #071a58; color:#ffc03e;">
-          <h1 class="text-white">PROTECT YOUR SKIN</h1>
-          <h4>Browse our top picks for sun protection!</h4>
+          <div class="scale-on-hover">
+            <h1 class="text-white">PROTECT YOUR SKIN</h1>
+            <h5>Browse our top picks for sun protection!</h5>
+          </div>
         </div>
       </div>
     </div>
@@ -289,7 +303,7 @@
     <h2 class="card-title text-white">PARTNER UP WITH US!</h2>
     <p class="card-text">Want your brand to be showcased on our website?</p>
     <a href="{% url 'main:create_ad' %}">
-      <button type="button" class="btn btn-danger mt-2">SUBMIT YOUR ADS HERE!</button>
+      <button type="button" class="btn btn-ads mt-2">SUBMIT YOUR ADS HERE!</button>
     </a>
   </div>
 </div>
