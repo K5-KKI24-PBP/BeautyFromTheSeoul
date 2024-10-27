@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from .models import UserProfile
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from django.core.exceptions import ValidationError 
+from django.core.exceptions import ValidationError
+from django.utils.html import strip_tags
 
 class RegistrationForm(UserCreationForm):
     user_role = forms.ChoiceField(
@@ -40,9 +41,18 @@ class RegistrationForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
+        email = strip_tags(email)
         if User.objects.filter(email=email).exists():
             raise ValidationError("This email is already in use.")
         return email
+
+    def clean_name(self):
+        name = self.cleaned_data.get("name")
+        return strip_tags(name)
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+        return strip_tags(username)
 
     def save(self, commit=True):
         user = super().save(commit=False)
