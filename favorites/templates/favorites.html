@@ -2,6 +2,7 @@
 {% load static %}
 {% block content %}
 {% include 'navbar.html' %}
+{% include 'edit_product_modal.html' %}
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
 
@@ -80,7 +81,7 @@
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-danger">Delete</button>
                                     </form>
-                                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editproductModal" onclick="openEditProductModal('{{ favorite.skincare_product.product_id }}')">Edit</button>
+                                    <button class="btn btn-warning" data-toggle="modal" data-bs-target="#editproductModal" onclick="openEditProductModal('{{ favorite.skincare_product.product_id }}')">Edit</button>
                                 </div>
                                 {% endif %}
                             </div>
@@ -151,6 +152,27 @@
                                             {% else %}
                                                 <p><a href="{% url 'authentication:login' %}">Log in</a> to leave a review.</p>
                                             {% endif %}
+                                        </div>
+                                        
+                                        <!-- Modal -->
+                                        <div id="editproductModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h2 class="modal-title" style="font-family: 'Laurasia';">Edit Product</h2>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div id="formFields"></div>
+                                                        <div class="modal-footer" style="background-color: #e1dcca;">
+                                                            <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                 
                                         <!-- Review Confirmation Message -->
