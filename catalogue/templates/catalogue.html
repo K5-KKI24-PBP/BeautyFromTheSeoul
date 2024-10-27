@@ -8,7 +8,7 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-<h1 class="text-center">PRODUCTS</h1>
+<h1 class="text-center display-5 mt-3">Products</h1>
 <p class="text-center">Find What You're Looking For!</p>
 
 <!-- Filter Button -->
@@ -125,7 +125,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll(".delete-review-btn").forEach(button => {
         button.addEventListener("click", function() {
@@ -157,21 +156,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     // Check if there are no more reviews for this user on this product
                     const reviewsContainer = document.getElementById(`reviews-${productId}`);
                     if (reviewsContainer && !reviewsContainer.querySelector("p")) {
-                        // Show the review form again
-                        document.getElementById(`review-form-container-${productId}`).innerHTML = `
-                            <form method="post" action="/catalogue/add_review/${productId}/" id="reviewForm${productId}" data-product-id="${productId}">
-                                <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector("[name=csrfmiddlewaretoken]").value}">
-                                <div class="form-group">
-                                    <label for="rating">Rating:</label>
-                                    <input type="number" name="rating" min="1" max="5" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="comment">Comment:</label>
-                                    <textarea name="comment" rows="3" required></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Submit Review</button>
-                            </form>
-                        `;
+                        // Reload the page to show the review form again
+                        location.reload();
                     }
 
                     alert(data.message);

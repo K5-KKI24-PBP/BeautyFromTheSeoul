@@ -93,14 +93,15 @@
                                         <h6>Reviews:</h6>
                                         <div id="reviews-{{ forloop.counter }}">
                                             {% for review in favorite.skincare_product.reviews.all %}
-                                                <p>
+                                                <p id="review-{{ review.id }}">
                                                     <strong>{{ review.user.username }}:</strong> 
                                                     {{ review.rating }} stars - "{{ review.comment }}"
                                                     {% if user.is_superuser %}
-                                                        <form method="post" action="{% url 'catalogue:delete_review' review.id %}" style="display:inline;">
-                                                            {% csrf_token %}
-                                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                                        </form>
+                                                        <button type="button" class="btn btn-danger btn-sm delete-review-btn" 
+                                                                data-review-id="{{ review.id }}" 
+                                                                data-product-id="{{ favorite.skincare_product.product_id }}">
+                                                            Delete
+                                                        </button>
                                                     {% endif %}
                                                 </p>
                                             {% empty %}
@@ -108,7 +109,7 @@
                                             {% endfor %}
                                         </div>
 
-                                        <!-- Review Form -->
+                                        <!-- AJAX Review Form -->
                                         {% if user.is_authenticated %}
                                             {% if not favorite.skincare_product.user_reviewed %}
                                                 <form method="post" action="{% url 'catalogue:add_review' favorite.skincare_product.product_id %}" id="reviewForm{{ forloop.counter }}">
@@ -124,7 +125,7 @@
                                                     <button type="submit" class="btn btn-primary">Submit Review</button>
                                                 </form>
                                             {% else %}
-                                                <p>You have already reviewed this product.</p>
+                                                <p id="no-review-message-{{ forloop.counter }}">You have already reviewed this product.</p>
                                             {% endif %}
                                         {% else %}
                                             <p><a href="{% url 'authentication:login' %}">Log in</a> to leave a review.</p>
@@ -186,24 +187,105 @@
         {% endif %}
     </div>
 </div>
-{% include 'footer.html' %}
 
-{% endblock content %}
-
-{% block scripts %}
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        // Ensure modal is triggered correctly
-        $('[data-toggle="modal"]').click(function() {
-            var targetModal = $(this).data("target");
-            $(targetModal).modal('show');
+$(document).ready(function() {
+    // Ensure modal is triggered correctly
+    $('[data-toggle="modal"]').click(function() {
+        var targetModal = $(this).data("target");
+        $(targetModal).modal('show');
+    });
+    $('.modal').on('hidden.bs.modal', function () {
+        $('.modal-backdrop').remove();
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll("form[id^='reviewForm']").forEach(form => {
+        form.addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const formData = new FormData(this);
+            const url = this.action; // URL of the form
+
+            fetch(url, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": formData.get("csrfmiddlewaretoken")
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const reviewSection = document.querySelector("#reviews-" + this.id.replace("reviewForm", ""));
+                    const newReview = `
+                        <p><strong>${data.user}:</strong> ${data.rating} stars - "${data.comment}"</p>
+                    `;
+                    reviewSection.innerHTML += newReview;
+                    this.reset(); // Clear form fields
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
         });
     });
-</script>
+});
 
-{% endblock scripts %}
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".delete-review-btn").forEach(button => {
+        button.addEventListener("click", function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const reviewId = this.getAttribute("data-review-id");
+            const productId = this.getAttribute("data-product-id");
+
+            // Confirm delete
+            if (!confirm("Are you sure you want to delete this review?")) {
+                return;
+            }
+
+            // Perform AJAX request to delete review
+            fetch(`/catalogue/delete_review/${reviewId}/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    "Content-Type": "application/json"
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the review element from the DOM
+                    const reviewElement = document.getElementById(`review-${reviewId}`);
+                    if (reviewElement) {
+                        reviewElement.remove();
+                    }
+
+                    // Check if there are no more reviews for this product
+                    const reviewsContainer = document.getElementById(`reviews-${productId}`);
+                    if (reviewsContainer && !reviewsContainer.querySelector("p")) {
+                        reviewsContainer.innerHTML = "<p>No reviews yet.</p>";
+                    }
+
+                    alert(data.message);
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred.");
+            });
+        });
+    });
+});
+</script>
+{% include 'footer.html' %}
+{% endblock content %}
