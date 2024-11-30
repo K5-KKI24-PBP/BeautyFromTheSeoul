@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.admin.views.decorators import staff_member_required
-
+from django.core import serializers
 from main.forms import AdForm
 from main.models import AdEntry
 
@@ -58,3 +58,7 @@ def pending_ads(request):
         "ads": ads
     }
     return render(request, "pending_ads.html", context)
+
+def get_ad(request):
+    data = AdEntry.objects.all()
+    return HttpResponse(serializers.serialize('json', data), content_type='application/json')

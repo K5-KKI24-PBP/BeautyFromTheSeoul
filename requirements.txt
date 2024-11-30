@@ -5,3 +5,6 @@ psycopg2-binary
 requests
 urllib3
 Pillow
+django-cors-headers
+django-environ
+dj-database-url
