@@ -30,7 +30,7 @@ jobs:
       # Step 4: Deploy to Vercel using the Vercel CLI
       - name: Deploy to Vercel
         run: |
-          vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
 
   run_migrations_and_load_data:
     runs-on: ubuntu-latest  # This job will also run on an Ubuntu machine
