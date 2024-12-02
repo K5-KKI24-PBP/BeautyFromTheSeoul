@@ -10,7 +10,7 @@ def show_main(request):
     if request.user.is_staff:  # Admins can see all ads
         ads = AdEntry.objects.all()
     else:
-        ads = AdEntry.objects.filter(is_approved=True)  # Customers see only approved ads
+        ads = AdEntry.objects.filter(is_approved=True)  # Non-admins see only approved ads
     context = {
         "user": request.user,
         "ads": ads
@@ -50,15 +50,3 @@ def approve_ad(request, id):
     ad.is_approved = True
     ad.save()
     return redirect('main:show_main')
-
-@staff_member_required
-def pending_ads(request):
-    ads = AdEntry.objects.filter(is_approved=False)  # Fetch unapproved ads
-    context = {
-        "ads": ads
-    }
-    return render(request, "pending_ads.html", context)
-
-def get_ad(request):
-    data = AdEntry.objects.all()
-    return HttpResponse(serializers.serialize('json', data), content_type='application/json')
