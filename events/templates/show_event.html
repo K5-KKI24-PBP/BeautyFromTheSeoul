@@ -41,12 +41,14 @@
 </div>
 
 <script>
+    // fetch user info from the server
     async function getUserInfo() {
         const response = await fetch('/events/user-info/');
         const data = await response.json();
         return data;
     }
 
+    // fetch filtered events from the server
     async function filterEvents(month = '', year = '') {
         let url = `/events/filter-events/${month && year ? '?month=' + month + '&year=' + year : ''}`;
         const res = await fetch(url);
@@ -55,10 +57,15 @@
     }
 
     async function showEvents(data) {
+        // takes data
         const events = JSON.parse(data.events);
         const rsvps = JSON.parse(data.rsvps);
+        // create a set of event ids that the user has RSVPed
         const rsvpSet = new Set(rsvps.map(rsvp => rsvp.fields.event));
 
+        // Sort events by start_date in ascending order
+        events.sort((a, b) => new Date(a.fields.start_date) - new Date(b.fields.start_date));
+        
         let eventCards = document.getElementById('eventCards');
         eventCards.innerHTML = '';
         const userInfo = await getUserInfo();
@@ -116,6 +123,7 @@
         });
     }
 
+    // sends request to delete an event asynchronously and refreshes the events list after successful deletion
     async function deleteEvent(eventId) {
         const response = await fetch(`/events/delete-event-ajax/${eventId}/`, { method: 'POST' });
         if (response.ok) await refreshEvents();
@@ -152,7 +160,8 @@
     document.addEventListener('DOMContentLoaded', async function () {
         await refreshEvents();
     });
-
+    
+    // add event listeners to refresh events on page load when month input changes
     document.getElementById('monthInput').addEventListener('change', async function () {
         await refreshEvents();
     });
