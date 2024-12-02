@@ -1,5 +1,6 @@
+from django.utils import timezone
 from django import forms
-from django.forms import ModelForm
+from django.forms import ModelForm, ValidationError
 from events.models import Events
 from django.utils.html import strip_tags
 
@@ -18,11 +19,13 @@ class EventsForm(ModelForm):
             }),
             'start_date': forms.DateInput(attrs={
                 'class': 'form-control', 
-                'placeholder': 'YYYY-MM-DD'
+                'placeholder': 'YYYY-MM-DD',
+                'type': 'date'
             }),
             'end_date': forms.DateInput(attrs={
                 'class': 'form-control', 
-                'placeholder': 'YYYY-MM-DD'
+                'placeholder': 'YYYY-MM-DD',
+                'type': 'date'
             }),
             'location': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -33,27 +36,23 @@ class EventsForm(ModelForm):
                 'placeholder': 'Enter type of promotion'
             }),
         }
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+        today = timezone.localdate()  
 
-    def clean_name(self):
-        name = self.cleaned_data["name"]
-        return strip_tags(name)
-    
-    def clean_description(self):
-        description = self.cleaned_data["description"]
-        return strip_tags(description)
-    
-    def clean_start_date(self):
-        start_date = self.cleaned_data["start_date"]
-        return strip_tags(start_date)
-    
-    def clean_end_date(self):
-        end_date = self.cleaned_data["end_date"]
-        return strip_tags(end_date)
-    
-    def clean_location(self):
-        location = self.cleaned_data["location"]
-        return strip_tags(location)
-    
-    def clean_promotion_type(self):
-        promotion_type = self.cleaned_data["promotion_type"]
-        return strip_tags(promotion_type)
+        if end_date and end_date < today:
+            self.add_error('end_date', 'The end date cannot be in the past. Please enter a date that is today or in the future.')
+
+        if start_date and end_date:
+            if start_date > end_date:
+                self.add_error('start_date', 'The start date cannot be after the end date. Please enter a start date that is before the end date.')
+
+        # Strip tags from other inputs to prevent XSS
+        for field in ['name', 'description', 'location', 'promotion_type']:
+            if cleaned_data.get(field):
+                cleaned_data[field] = strip_tags(cleaned_data[field])
+
+        return cleaned_data

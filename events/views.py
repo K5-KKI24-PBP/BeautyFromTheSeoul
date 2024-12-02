@@ -105,7 +105,6 @@ def delete_rsvp_ajax(request, event_id):
     return JsonResponse({ 'message': 'RSVP not found' }, status=404)
 
 
-
 def filter_events(request):
     month = request.GET.get('month', '')
     year = request.GET.get('year', '')
@@ -119,13 +118,16 @@ def filter_events(request):
     if month.isdigit() and year.isdigit():
         month = int(month)
         year = int(year)
+        
         last_day = calendar.monthrange(year, month)[1]
         start_date = datetime(year, month, 1)
         end_date = datetime(year, month, last_day)
+        # Filter events based on the start and end dates.
         events = Events.objects.filter(start_date__lte=end_date, end_date__gte=start_date)
     else:
         events = Events.objects.all()  
 
+    # filter events based on RSVP status.
     if user_profile:
         rsvps = RSVP.objects.filter(event__in=events, user=user_profile) 
         rsvp_event_ids = [rsvp.event.id for rsvp in rsvps]
