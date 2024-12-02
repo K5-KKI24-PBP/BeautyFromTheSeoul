@@ -206,3 +206,7 @@ def delete_review(request, review_id):
         return JsonResponse({"success": False, "message": "Review not found."}, status=404)
     except Exception as e:
         return JsonResponse({"success": False, "message": str(e)}, status=400)
+
+def get_review(request):
+    data = Review.objects.all()
+    return HttpResponse(serializers.serialize('json', data), content_type='application/json')

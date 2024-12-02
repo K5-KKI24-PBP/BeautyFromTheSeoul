@@ -1,0 +1,40 @@
+name: Deploy Django to Vercel and Load Data
+
+# Trigger the workflow when you push to the main branch
+on:
+  push:
+    branches:
+      - main  # Adjust this to any branch you want to trigger deployment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # GitHub Actions will run this job on an Ubuntu environment
+
+    steps:
+      # Step 1: Checkout the code from the GitHub repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Python environment (use Python 3.12 in this case)
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      # Step 3: Install dependencies from requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Step 4: Run migrations and load data before deployment
+      - name: Run migrations and load data
+        run: |
+          python manage.py migrate  # Apply any migrations
+          python manage.py loaddata catalogue/fixtures/products.json  # Correct path to your products.json
+
+      # Step 5: Deploy to Vercel using the Vercel CLI
+      - name: Deploy to Vercel
+        run: |
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
+

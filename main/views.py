@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.admin.views.decorators import staff_member_required
-
+from django.core import serializers
 from main.forms import AdForm
 from main.models import AdEntry
 

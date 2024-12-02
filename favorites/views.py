@@ -3,7 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from favorites.models import Favorite, Products
 from catalogue.models import Review
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.core import serializers
 
 
 def show_favorites(request):
@@ -72,7 +73,9 @@ def remove_favorites(request, product_id):
     else:
         return JsonResponse({'success': False, 'message': 'The following product is not in your favorites.'})
 
-
+def get_favorites(request):
+    data = Favorite.objects.all()
+    return HttpResponse(serializers.serialize('json', data), content_type='application/json')
 
 
 
