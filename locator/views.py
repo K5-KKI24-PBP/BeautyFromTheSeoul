@@ -23,12 +23,9 @@ def filter_locations(request):
     else:
         locations = Locations.objects.all()
 
-    # print("Filtered locations:", locations)  
     data = serializers.serialize('json', locations)
-    # print("Serialized data:", data)  
+    
     return JsonResponse(data, safe=False)
-
-
 
 def create_location_entry(request):
     form = StoreLocationForm(request.POST)
