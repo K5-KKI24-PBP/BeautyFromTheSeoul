@@ -6,32 +6,37 @@ class Command(BaseCommand):
     help = 'Load products from a JSON file'
 
     def handle(self, *args, **kwargs):
-        # Clear existing data
-        Products.objects.all().delete()
+        # Open and read the JSON file
+        with open('products.json', 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            product_list = []
 
-        with open('products.json', 'r', encoding='utf-8') as jsonfile:
-            data = json.load(jsonfile)
+            # Iterate over each product and create a Product instance with truncated fields
+            for item in data:
+                fields = item['fields']
+                
+                # Truncate string fields to 200 characters if needed
+                product_name = fields['product_name'][:200]
+                product_brand = fields['product_brand'][:200]
+                product_description = fields['product_description'][:200]
+                product_type = fields['product_type'][:200]
+                image = fields['image'][:200]  # Truncate the image URL if necessary
+                
+                # Create a Product object with the truncated fields
+                product_list.append(Products(
+                    product_id=fields['product_id'],
+                    product_name=product_name,
+                    product_brand=product_brand,
+                    price=fields['price'],
+                    product_description=product_description,
+                    product_type=product_type,
+                    image=image
+                ))
 
-            # Check if the data is a list or a single product
-            if isinstance(data, list):
-                products_data = data
-            else:
-                products_data = [data]  # Wrap in a list if it's a single item
+            # Use bulk_create for batch insertion to optimize performance
+            from django.db import transaction
+            with transaction.atomic():
+                Products.objects.bulk_create(product_list)
 
-            for item in products_data:
-                if item['model'] == 'catalogue.Products':
-                    fields = item['fields']
-                    product_id = item['pk']
-
-                    # Create a new product entry
-                    Products.objects.create(
-                        product_id=product_id,
-                        product_name=fields.get('product_name', '')[:200],  
-                        product_brand=fields.get('product_brand', '')[:200],  
-                        price=fields.get('price', ''),
-                        product_description=fields.get('product_description', '')[:200],  
-                        product_type=fields.get('product_type', '')[:200],  
-                        image=fields.get('image', '')[:200],  
-                    )
-
+        # Notify success
         self.stdout.write(self.style.SUCCESS('Successfully loaded products'))
