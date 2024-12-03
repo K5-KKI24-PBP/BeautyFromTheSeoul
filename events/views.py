@@ -1,6 +1,7 @@
 import calendar
 from datetime import datetime
 from functools import wraps
+import json
 from django.shortcuts import get_object_or_404, render, redirect
 from authentication.models import UserProfile
 from events.models import Events, RSVP
@@ -152,6 +153,26 @@ def user_info(request):
 
     return JsonResponse(data)
 
+@csrf_exempt
+def create_event_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        new_event = Events.objects.create(
+            name=data["title"],
+            description=data["description"],
+            start_date=data["start_date"],
+            end_date=data["end_date"],
+            location=data["location"],
+            promotion_type=data["promotion_type"],
+        )
+
+        new_event.save()
+        print(new_event)
+
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
+
 @superuser_required
 @login_required(login_url='authentication:login')
 def show_json_rsvp(request):
@@ -160,8 +181,6 @@ def show_json_rsvp(request):
         serializers.serialize("json", data), content_type="application/json"
     )
 
-@superuser_required
-@login_required(login_url='authentication:login')
 def show_json(request):
     events = Events.objects.all()
     data = serializers.serialize('json', events)
