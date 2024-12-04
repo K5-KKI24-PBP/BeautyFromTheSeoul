@@ -1,7 +1,8 @@
 from django.urls import path
 from events.views import show_events, create_event, edit_event, \
     show_json, show_json_rsvp, filter_events, user_info, rsvp_ajax, \
-    delete_rsvp_ajax, delete_event_ajax, create_event_flutter
+    delete_rsvp_ajax, delete_event_ajax, create_event_flutter, delete_event_flutter, edit_event_flutter, \
+    get_event
 
 app_name = 'events'
 
@@ -17,4 +18,7 @@ urlpatterns = [
     path('cancel-rsvp-ajax/<uuid:event_id>/', delete_rsvp_ajax, name='delete_ajax'),
     path('delete-event-ajax/<uuid:id>/', delete_event_ajax, name='delete_event_ajax'),
     path('create-event-flutter/', create_event_flutter, name='create_event_flutter'),
+    path('delete-event-flutter/<uuid:id>/', delete_event_flutter, name='delete_event_flutter'),
+    path('edit-event-flutter/<uuid:id>/', edit_event_flutter, name='edit_event_flutter'),
+    path('get-event/<uuid:id>/', get_event, name='get_event'),
 ]
