@@ -105,7 +105,7 @@ def delete_rsvp_ajax(request, event_id):
         return JsonResponse({ 'message': 'RSVP deleted' })
     return JsonResponse({ 'message': 'RSVP not found' }, status=404)
 
-
+@csrf_exempt
 def filter_events(request):
     month = request.GET.get('month', '')
     year = request.GET.get('year', '')
@@ -172,6 +172,45 @@ def create_event_flutter(request):
         return JsonResponse({"status": "success"}, status=200)
     else:
         return JsonResponse({"status": "error"}, status=401)
+    
+@csrf_exempt
+def delete_event_flutter(request, id):
+    print(f"Request method: {request.method}, ID: {id}")
+    if request.method == 'DELETE':
+        try:
+            event = Events.objects.get(id=id)
+            event.delete()
+            return JsonResponse({"status": "success"}, status=200)
+        except Events.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Event not found"}, status=404)
+    return JsonResponse({"status": "error", "message": "Invalid method"}, status=405)
+
+@csrf_exempt
+def edit_event_flutter(request, id):
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        event = Events.objects.get(id=id)
+        event.name = data.get("title", event.name)  
+        event.description = data.get("description", event.description)
+        event.start_date = data.get("start_date", event.start_date)
+        event.end_date = data.get("end_date", event.end_date)
+        event.location = data.get("location", event.location)
+        event.promotion_type = data.get("promotion_type", event.promotion_type)
+        event.save()
+        return JsonResponse({"status": "success"}, status=200)
+
+def get_event(request, id):
+    if request.method == 'GET':
+        event = get_object_or_404(Events, pk=id)
+        event_data = {
+            'title': event.name,
+            'description': event.description,
+            'start_date': event.start_date.strftime('%Y-%m-%d'),
+            'end_date': event.end_date.strftime('%Y-%m-%d'),
+            'location': event.location,
+            'promotion_type': event.promotion_type,
+        }
+        return JsonResponse(event_data)
 
 @superuser_required
 @login_required(login_url='authentication:login')
