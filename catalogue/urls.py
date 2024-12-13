@@ -1,5 +1,4 @@
 from django.urls import path
-# from catalogue.views import show_products, add_product, edit_product
 from .views import *
 
 app_name = 'catalogue'
@@ -14,4 +13,5 @@ urlpatterns = [
     path('filter_ajax/', filter_products_ajax, name='filter_products_ajax'),
     path('get_product/', get_product, name='get_product'),
     path('get_review/', get_review, name='get_reviews'),
-]
+    path('review_flutter/<uuid:product_id>/', review_flutter, name='review_flutter'),
+    ]
