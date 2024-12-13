@@ -12,6 +12,9 @@ from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 from django.contrib import messages
 from django.template.loader import render_to_string
+import json
+from datetime import datetime
+from authentication.models import User
 
 # Create your views here.
 def superuser_required(view_func):
@@ -194,6 +197,7 @@ def add_review(request, product_id):
         messages.error(request, "Invalid data provided/Review from User already exists .")
         return redirect(reverse('catalogue:show_products'))
     
+@csrf_exempt
 @superuser_required
 @login_required
 @require_POST
@@ -210,3 +214,70 @@ def delete_review(request, review_id):
 def get_review(request):
     data = Review.objects.all()
     return HttpResponse(serializers.serialize('json', data), content_type='application/json')
+
+@csrf_exempt
+def review_flutter(request, product_id):
+    if request.method == 'POST':
+        try:
+            # Add debug logging
+            print(f"Processing review for product {product_id}")
+            
+            data = json.loads(request.body)
+            
+            # Validate data first
+            user_id = data.get('user')
+            rating = data.get('rating')
+            comment = data.get('comment')
+            
+            # Check for existing review first
+            try:
+                user = User.objects.get(pk=user_id)
+                product = Products.objects.get(pk=product_id)
+                
+                existing_review = Review.objects.filter(
+                    product=product, 
+                    user=user
+                ).exists()
+                
+                if existing_review:
+                    return JsonResponse({
+                        "status": False,
+                        "message": "You have already reviewed this product"
+                    }, status=400)
+                    
+                # Create review only if no existing review
+                review = Review.objects.create(
+                    product=product,
+                    user=user, 
+                    rating=rating,
+                    comment=comment
+                )
+                
+                return JsonResponse({
+                    "status": True,
+                    "message": "Review created successfully"
+                }, status=201)
+                
+            except (User.DoesNotExist, Products.DoesNotExist) as e:
+                return JsonResponse({
+                    "status": False, 
+                    "message": str(e)
+                }, status=404)
+                
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "status": False,
+                "message": "Invalid JSON"
+            }, status=400)
+            
+        except Exception as e:
+            print(f"Error creating review: {str(e)}")
+            return JsonResponse({
+                "status": False,
+                "message": str(e) 
+            }, status=500)
+
+    return JsonResponse({
+        "status": False,
+        "message": "Invalid method"
+    }, status=405)
