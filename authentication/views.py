@@ -188,3 +188,7 @@ def register_flutter(request):
         "status": False,
         "message": "Invalid request method"
     }, status=405)
+
+def get_user_profile(request, user_id):
+    user = User.objects.filter(id=user_id)
+    return HttpResponse(serializers.serialize('json', user), content_type='application/json')
