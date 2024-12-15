@@ -15,6 +15,9 @@ from django.template.loader import render_to_string
 import json
 from datetime import datetime
 from authentication.models import User
+from django.contrib.admin.views.decorators import staff_member_required
+
+
 
 # Create your views here.
 def superuser_required(view_func):
@@ -336,3 +339,43 @@ def delete_review_flutter(request, review_id):
         "status": False,
         "message": "Invalid method"
     }, status=405)
+
+
+@csrf_exempt
+@require_POST
+@staff_member_required
+def add_product_flutter(request):
+    try:
+        # Parse the incoming JSON data from Flutter
+        data = json.loads(request.body)
+
+        # Extract product details from the JSON payload
+        image = strip_tags(data.get("image", ""))
+        product_name = strip_tags(data.get("product_name", ""))
+        product_brand = strip_tags(data.get("product_brand", ""))
+        product_type = strip_tags(data.get("product_type", ""))
+        product_description = strip_tags(data.get("product_description", ""))
+        price = strip_tags(data.get("price", ""))
+
+        # Validate required fields
+        if not all([image, product_name, product_brand, product_type, product_description, price]):
+            return JsonResponse({"error": "Fill in all required fields!"}, status=400)
+
+        # Create a new product and save it to the database
+        new_product = Products(
+            product_name=product_name,
+            product_brand=product_brand,
+            product_type=product_type,
+            product_description=product_description,
+            price=price,
+            image=image,
+        )
+        new_product.save()
+
+        # Return a success response with the created product data
+        return JsonResponse({"success": True, "message": "Product added successfully!"}, status=201)
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
