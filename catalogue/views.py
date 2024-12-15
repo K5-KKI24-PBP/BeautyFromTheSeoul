@@ -197,7 +197,6 @@ def add_review(request, product_id):
         messages.error(request, "Invalid data provided/Review from User already exists .")
         return redirect(reverse('catalogue:show_products'))
     
-@csrf_exempt
 @superuser_required
 @login_required
 @require_POST
@@ -212,27 +211,53 @@ def delete_review(request, review_id):
         return JsonResponse({"success": False, "message": str(e)}, status=400)
 
 def get_review(request):
-    data = Review.objects.all()
-    return HttpResponse(serializers.serialize('json', data), content_type='application/json')
+    reviews = Review.objects.select_related('user').all()  # Add select_related to optimize query
+    review_data = []
+    for review in reviews:
+        try:
+            username = review.user.username  # Get username from related User model
+            print(f"Found username: {username} for review {review.pk}")  # Debug print
+        except:
+            username = "Unknown User"
+            print(f"No username found for review {review.pk}")  # Debug print
+            
+        review_dict = {
+            'model': 'catalogue.review',
+            'pk': review.pk,
+            'fields': {
+                'product': str(review.product.product_id),
+                'user': review.user.id,
+                'username': username,  # Include the username
+                'rating': review.rating,
+                'comment': review.comment,
+                'created_at': review.created_at.isoformat()
+            }
+        }
+        review_data.append(review_dict)
+    return JsonResponse(review_data, safe=False)
 
 @csrf_exempt
 def review_flutter(request, product_id):
     if request.method == 'POST':
         try:
-            # Add debug logging
-            print(f"Processing review for product {product_id}")
-            
             data = json.loads(request.body)
             
-            # Validate data first
+            # Get all required data including username
             user_id = data.get('user')
+            username = data.get('username')  # Get username from request
             rating = data.get('rating')
             comment = data.get('comment')
             
-            # Check for existing review first
             try:
                 user = User.objects.get(pk=user_id)
                 product = Products.objects.get(pk=product_id)
+                
+                # Verify username matches
+                if user.username != username:
+                    return JsonResponse({
+                        "status": False,
+                        "message": "Invalid user data"
+                    }, status=400)
                 
                 existing_review = Review.objects.filter(
                     product=product, 
@@ -245,7 +270,6 @@ def review_flutter(request, product_id):
                         "message": "You have already reviewed this product"
                     }, status=400)
                     
-                # Create review only if no existing review
                 review = Review.objects.create(
                     product=product,
                     user=user, 
@@ -255,7 +279,18 @@ def review_flutter(request, product_id):
                 
                 return JsonResponse({
                     "status": True,
-                    "message": "Review created successfully"
+                    "message": "Review created successfully",
+                    "review": {
+                        "pk": review.pk,
+                        "fields": {
+                            "product": str(review.product.product_id),
+                            "user": review.user.id,
+                            "username": review.user.username,
+                            "rating": review.rating,
+                            "comment": review.comment,
+                            "created_at": review.created_at.isoformat()
+                        }
+                    }
                 }, status=201)
                 
             except (User.DoesNotExist, Products.DoesNotExist) as e:
@@ -277,6 +312,26 @@ def review_flutter(request, product_id):
                 "message": str(e) 
             }, status=500)
 
+    return JsonResponse({
+        "status": False,
+        "message": "Invalid method"
+    }, status=405)
+
+@csrf_exempt
+def delete_review_flutter(request, review_id):
+    if request.method == 'DELETE':
+        try:
+            review = Review.objects.get(pk=review_id)
+            review.delete()
+            return JsonResponse({
+                "status": True,
+                "message": "Review deleted successfully"
+            }, status=204) 
+        except Review.DoesNotExist:
+            return JsonResponse({
+                "status": False,
+                "message": "Review not found"
+            }, status=404)
     return JsonResponse({
         "status": False,
         "message": "Invalid method"
