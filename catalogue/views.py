@@ -70,9 +70,6 @@ def show_products(request):
 def filter_products(request, products):
     product_type = request.GET.get('product_type')
     product_brand = request.GET.get('product_brand')
-    
-    print(product_type)
-    print(product_brand)
 
     if product_type:
         products = products.filter(product_type__icontains=product_type)
