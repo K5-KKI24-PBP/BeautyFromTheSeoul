@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from favorites.models import Favorite, Products
 from catalogue.models import Review
 from django.http import JsonResponse, HttpResponse
 from django.core import serializers
+import json
 
 
 def show_favorites(request):
@@ -73,11 +75,61 @@ def remove_favorites(request, product_id):
     else:
         return JsonResponse({'success': False, 'message': 'The following product is not in your favorites.'})
 
+@csrf_exempt
 def get_favorites(request):
-    data = Favorite.objects.all()
-    return HttpResponse(serializers.serialize('json', data), content_type='application/json')
+    if request.method == 'POST':
+        # Parse the request body
+        data = json.loads(request.body)
+        user_id = data.get('user_id')  # Get the user_id from the request body
 
+        if not user_id:
+            return JsonResponse({'error': 'User ID is missing'}, status=400)
 
+        # Fetch the user's favorites
+        favorites = Favorite.objects.filter(user_id=user_id).select_related('skincare_product')
+        print(favorites)
 
+        # Serialize the favorite products
+        favorite_products = [
+            {
+                'name': favorite.skincare_product.product_name,
+                'brand': favorite.skincare_product.product_brand,
+                'price': favorite.skincare_product.price,
+                'image': favorite.skincare_product.image,
+            }
+            for favorite in favorites
+        ]
 
+        # Return the favorites as a JSON response
+        return JsonResponse(favorite_products, safe=False)
 
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@csrf_exempt
+def add_favorites_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        print(data)
+
+        product_id = data.get('product_id') 
+        if not product_id:
+            return JsonResponse({'error': 'Product ID is missing'}, status=400)
+
+        user_id = data.get('user_id')
+        if not user_id:
+            return JsonResponse({'error': 'user ID is missing'}, status=400)
+
+        # Fetch the product instance based on the product_id
+        try:
+            product = Products.objects.get(product_id=product_id)  # Adjust if using a different identifier
+        except Products.DoesNotExist:
+            return JsonResponse({'error': 'Product not found'}, status=404)
+
+        # Fetch or create the favorite for the user
+        favorite, created = Favorite.objects.get_or_create(user_id=user_id, skincare_product=product)
+        if not created:
+            favorite.delete()  # If it exists, remove it
+            return JsonResponse({'status': 'removed'})
+        return JsonResponse({'status': 'added'})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
