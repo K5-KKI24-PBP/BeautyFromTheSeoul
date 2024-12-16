@@ -95,13 +95,19 @@ def get_favorites(request):
                 'name': favorite.skincare_product.product_name,
                 'brand': favorite.skincare_product.product_brand,
                 'price': favorite.skincare_product.price,
+                'type' : favorite.skincare_product.product_type,
                 'image': favorite.skincare_product.image,
             }
             for favorite in favorites
         ]
 
+        favorite_product_ids = [favorite.skincare_product.product_id for favorite in favorites]
+
         # Return the favorites as a JSON response
-        return JsonResponse(favorite_products, safe=False)
+        return JsonResponse({
+            'favorite_product_ids': favorite_product_ids,
+            'favorite_products': favorite_products  # Include full product details if needed
+        }, status=200)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
