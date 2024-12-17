@@ -87,16 +87,21 @@ def get_favorites(request):
 
         # Fetch the user's favorites
         favorites = Favorite.objects.filter(user_id=user_id).select_related('skincare_product')
-        print(favorites)
+
 
         # Serialize the favorite products
         favorite_products = [
             {
-                'name': favorite.skincare_product.product_name,
-                'brand': favorite.skincare_product.product_brand,
-                'price': favorite.skincare_product.price,
-                'type' : favorite.skincare_product.product_type,
-                'image': favorite.skincare_product.image,
+                'model': 'catalogue.products',  # Matches your Products model's `model`
+                'pk': favorite.skincare_product.product_id,  # Use product_id as primary key
+                'fields': {
+                    'product_name': favorite.skincare_product.product_name,
+                    'product_brand': favorite.skincare_product.product_brand,
+                    'product_type': favorite.skincare_product.product_type,
+                    'product_description': favorite.skincare_product.product_description,
+                    'price': favorite.skincare_product.price,
+                    'image': favorite.skincare_product.image,
+                },
             }
             for favorite in favorites
         ]
