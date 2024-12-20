@@ -339,8 +339,6 @@ def delete_review_flutter(request, review_id):
 
 
 @csrf_exempt
-@require_POST
-@staff_member_required
 def add_product_flutter(request):
     try:
         # Parse the incoming JSON data from Flutter
@@ -359,7 +357,7 @@ def add_product_flutter(request):
             return JsonResponse({"error": "Fill in all required fields!"}, status=400)
 
         # Create a new product and save it to the database
-        new_product = Products(
+        product = Products(
             product_name=product_name,
             product_brand=product_brand,
             product_type=product_type,
@@ -367,7 +365,7 @@ def add_product_flutter(request):
             price=price,
             image=image,
         )
-        new_product.save()
+        product.save()
 
         # Return a success response with the created product data
         return JsonResponse({"success": True, "message": "Product added successfully!"}, status=201)
@@ -376,7 +374,7 @@ def add_product_flutter(request):
         return JsonResponse({"error": "Invalid JSON data"}, status=400)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
-
+    
 @csrf_exempt
 def delete_product_flutter(request,product_id):
     if request.method == 'DELETE':
