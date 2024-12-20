@@ -376,3 +376,23 @@ def add_product_flutter(request):
         return JsonResponse({"error": "Invalid JSON data"}, status=400)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+@csrf_exempt
+def delete_product_flutter(request,product_id):
+    if request.method == 'DELETE':
+        try:
+            product = Products.objects.get(pk=product_id)
+            product.delete()
+            return JsonResponse({
+                "status": True,
+                "message": "Review deleted successfully"
+            }, status=204) 
+        except Products.DoesNotExist:
+            return JsonResponse({
+                "status": False,
+                "message": "Review not found"
+            }, status=404)
+    return JsonResponse({
+        "status": False,
+        "message": "Invalid method"
+    }, status=405)
