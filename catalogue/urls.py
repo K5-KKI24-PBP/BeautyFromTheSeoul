@@ -16,6 +16,9 @@ urlpatterns = [
     path('review_flutter/<uuid:product_id>/', review_flutter, name='review_flutter'),
     path('delete_review_flutter/<int:review_id>/', delete_review_flutter, name='delete_review_flutter'),
     path('add_product_flutter/', add_product_flutter, name='add_product_flutter'),
-    path('delete_product_flutter/<uuid:product_id>/', delete_product_flutter, name='delete_product_flutter')
+    path('delete_product_flutter/<uuid:product_id>/', delete_product_flutter, name='delete_product_flutter'),
+    path('edit_product_flutter/<uuid:product_id>/', edit_product_flutter, name='edit_product_flutter'),
+    path('get_product_flutter/<uuid:product_id>/', get_product_flutter, name='get_product_flutter'),
+    path('filter_products_flutter/', filter_products_flutter, name='filter_products_flutter'),
 
 ]
