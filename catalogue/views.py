@@ -394,3 +394,95 @@ def delete_product_flutter(request,product_id):
         "status": False,
         "message": "Invalid method"
     }, status=405)
+
+@csrf_exempt
+def edit_product_flutter(request, product_id):
+    if request.method == 'PUT':
+        try:
+            product = Products.objects.get(pk=product_id)
+            data = json.loads(request.body)
+            product.product_name = data.get('product_name', product.product_name)
+            product.product_brand = data.get('product_brand', product.product_brand)
+            product.product_type = data.get('product_type', product.product_type)
+            product.product_description = data.get('product_description', product.product_description)
+            product.price = data.get('price', product.price)
+            product.image = data.get('image', product.image)
+            product.save()
+            return JsonResponse({
+                "status": True,
+                "message": "Product updated successfully"
+            }, status=200)
+        except Products.DoesNotExist:
+            return JsonResponse({
+                "status": False,
+                "message": "Product not found"
+            }, status=404)
+        
+def get_product_flutter(request, product_id):
+    if request.method == 'GET':
+        try:
+            product = Products.objects.get(pk=product_id)
+            return JsonResponse({
+                "product_name": product.product_name,
+                "product_brand": product.product_brand,
+                "product_type": product.product_type,
+                "product_description": product.product_description,
+                "price": product.price,
+                "image": product.image,
+            }, status=200)
+        except Products.DoesNotExist:
+            return JsonResponse({
+                "status": False,
+                "message": "Product not found"
+            }, status=404)
+    return JsonResponse({
+        "status": False,
+        "message": "Invalid method"
+    }, status=405)
+
+@csrf_exempt
+def filter_products_flutter(request):
+    try:
+        # Ensure it's a POST request
+        if request.method != 'POST':
+            return JsonResponse({"error": "Only POST requests are allowed"}, status=400)
+
+        # Parse JSON payload
+        data = json.loads(request.body)
+        product_type = data.get('product_type', None)
+        product_brand = data.get('product_brand', None)
+        sort_by = data.get('sort_by', None)  # New sorting parameter
+
+        # Filter products based on criteria
+        products = Products.objects.all()
+        if product_type:
+            products = products.filter(product_type__icontains=product_type)
+        if product_brand:
+            products = products.filter(product_brand__icontains=product_brand)
+
+        # Apply sorting
+        if sort_by == "recently_added":
+            products = products.order_by('-created_at')  # Assuming created_at field exists
+        elif sort_by == "alphabetically":
+            products = products.order_by('product_name')
+
+        # Serialize filtered products into JSON
+        product_list = [
+            {
+                "id": str(product.id),
+                "product_name": product.product_name,
+                "product_brand": product.product_brand,
+                "product_type": product.product_type,
+                "product_description": product.product_description,
+                "price": str(product.price),
+                "image": product.image.url if product.image else None,
+            }
+            for product in products
+        ]
+
+        return JsonResponse({"success": True, "products": product_list}, status=200)
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
