@@ -1,5 +1,5 @@
 from django.urls import path
-from favorites.views import show_favorites, add_favorites, remove_favorites, get_favorites, add_favorites_flutter
+from favorites.views import show_favorites, add_favorites, remove_favorites, get_favorites, add_favorites_flutter, delete_favorites_flutter
 
 app_name = 'favorites'
 
@@ -9,4 +9,5 @@ urlpatterns = [
     path('', show_favorites, name='favorites'),
     path('get_favorites/', get_favorites, name='get_favorites'),
     path('add_favorites_flutter/', add_favorites_flutter, name="add_favorites_flutter"),
+    path('delete_favorite/', delete_favorites_flutter, name='delete_favorite_flutter'),
 ]
