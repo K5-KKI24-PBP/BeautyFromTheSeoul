@@ -144,3 +144,31 @@ def add_favorites_flutter(request):
         return JsonResponse({'status': 'added'})
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@csrf_exempt
+def delete_favorites_flutter(request):
+    if request.method == 'DELETE':
+        try:
+            # Get the product_id and user_id from the request body
+            data = json.loads(request.body)
+            print(data)
+            product_id = data.get('product_id')
+            user_id = data.get('user_id')  # Assuming you also pass the user_id in the request
+
+            if not product_id or not user_id:
+                return JsonResponse({'error': 'product_id and user_id are required'}, status=400)
+
+            # Find the user and the favorite record to delete
+            favorite = Favorite.objects.filter(user_id=user_id, skincare_product_id=product_id).first()
+
+            if favorite:
+                favorite.delete()  # Delete the favorite record
+                print(favorite)
+                return JsonResponse({'message': 'Favorite deleted successfully'}, status=200)
+            else:
+                return JsonResponse({'error': 'Favorite not found'}, status=404)
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid method'}, status=405)
