@@ -167,6 +167,7 @@ def add_product_entry(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+    
 def get_product(request):
     data = Products.objects.all()
     return HttpResponse(serializers.serialize('json', data), content_type='application/json')
@@ -440,18 +441,16 @@ def get_product_flutter(request, product_id):
         "message": "Invalid method"
     }, status=405)
 
-@csrf_exempt
 def filter_products_flutter(request):
     try:
-        # Ensure it's a POST request
-        if request.method != 'POST':
-            return JsonResponse({"error": "Only POST requests are allowed"}, status=400)
+        # Ensure it's a GET request
+        if request.method != 'GET':
+            return JsonResponse({"error": "Only GET requests are allowed"}, status=400)
 
-        # Parse JSON payload
-        data = json.loads(request.body)
-        product_type = data.get('product_type', None)
-        product_brand = data.get('product_brand', None)
-        sort_by = data.get('sort_by', None)  # New sorting parameter
+        # Get query parameters
+        product_brand = request.GET.get('product_brand', '')
+        product_type = request.GET.get('product_type', '')
+        sort_by = request.GET.get('sort_by', '')
 
         # Filter products based on criteria
         products = Products.objects.all()
@@ -460,29 +459,19 @@ def filter_products_flutter(request):
         if product_brand:
             products = products.filter(product_brand__icontains=product_brand)
 
-        # Apply sorting
-        if sort_by == "recently_added":
-            products = products.order_by('-created_at')  # Assuming created_at field exists
-        elif sort_by == "alphabetically":
-            products = products.order_by('product_name')
-
-        # Serialize filtered products into JSON
         product_list = [
             {
-                "id": str(product.id),
                 "product_name": product.product_name,
                 "product_brand": product.product_brand,
                 "product_type": product.product_type,
                 "product_description": product.product_description,
-                "price": str(product.price),
-                "image": product.image.url if product.image else None,
+                "price": product.price,
+                "image": product.image
             }
             for product in products
         ]
 
         return JsonResponse({"success": True, "products": product_list}, status=200)
 
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON data"}, status=400)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
