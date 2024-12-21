@@ -13,5 +13,5 @@ urlpatterns = [
     path("ads/approve/<uuid:id>/", approve_ad_flutter, name="approve_ad_flutter"),
     path("ads/delete/<uuid:id>/", delete_ad_flutter, name="delete_ad_flutter"),
     path("ads/submit/", submit_ad_flutter, name="submit_ad_flutter"),
-    path("ads/edit-ad/<uuid:id>/", edit_ad, name="edit_ad_flutter"),
+    path("ads/edit-ad/<uuid:id>/", edit_ad_flutter, name="edit_ad_flutter"),
 ]
