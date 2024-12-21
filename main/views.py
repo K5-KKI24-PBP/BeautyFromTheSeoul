@@ -104,3 +104,22 @@ def submit_ad_flutter(request):
         except json.JSONDecodeError:
             return JsonResponse({"status": False, "message": "Invalid JSON data"}, status=400)
     return JsonResponse({"status": False, "message": "Invalid request method"}, status=405)
+
+@csrf_exempt
+def edit_ad_flutter(request, id):
+    ad = get_object_or_404(AdEntry, id=id)
+
+    if request.method == "POST":
+        data = json.loads(request.body)
+        brand_name = data.get("brand_name")
+        image = data.get("image")
+
+        if brand_name:
+            ad.brand_name = brand_name
+        if image:
+            ad.image = image 
+
+        ad.save()
+        return JsonResponse({"status": True, "message": "Ad updated successfully"})
+    
+    return JsonResponse({"status": False, "message": "Invalid request method"}, status=405)
