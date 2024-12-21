@@ -211,9 +211,41 @@ def get_event(request, id):
             'promotion_type': event.promotion_type,
         }
         return JsonResponse(event_data)
+    
+@csrf_exempt
+def rsvp_flutter(request, event_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user = get_object_or_404(User, username=data["username"])
+        event = get_object_or_404(Events, id=event_id)
+        user_profile = get_object_or_404(UserProfile, user=user)
 
-@superuser_required
-@login_required(login_url='authentication:login')
+        rsvp, created = RSVP.objects.get_or_create(event=event, user=user_profile)
+        rsvp.rsvp_status = True
+
+        rsvp.save()
+        return JsonResponse({"status": "success", "rsvp_status": rsvp.rsvp_status}, status=200)
+    return JsonResponse({"status": "error"}, status=405)
+
+@csrf_exempt
+def cancel_rsvp_flutter(request, event_id):
+    if request.method == 'DELETE':
+        try:
+            data = json.loads(request.body)
+            user = get_object_or_404(User, username=data["username"])
+            event = get_object_or_404(Events, id=event_id)
+            user_profile = get_object_or_404(UserProfile, user=user)
+
+            rsvp = RSVP.objects.filter(event=event, user=user_profile).first()
+            if rsvp:
+                rsvp.delete()
+                return JsonResponse({"status": "success", "rsvp_status": False}, status=200)
+            return JsonResponse({"status": "error", "message": "RSVP not found"}, status=404)
+        except Exception as e:
+            print(f"Error in cancel_rsvp_flutter: {e}")
+            return JsonResponse({"status": "error", "message": "An error occurred"}, status=500)
+    return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
+
 def show_json_rsvp(request):
     data = RSVP.objects.all()
     return HttpResponse(
